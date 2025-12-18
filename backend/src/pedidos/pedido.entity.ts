@@ -1,6 +1,12 @@
 // backend/src/pedidos/pedido.entity.ts
 
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Usuario } from '../usuarios/usuario.entity';
 import { Padaria } from '../padarias/padaria.entity';
 import { DetalhePedido } from './detalhe-pedido.entity'; // Importa a entidade detalhe
@@ -25,7 +31,7 @@ export class Pedido {
   valorTotal: number;
 
   @Column({ type: 'varchar' })
-  enderecoEntrega: string; 
+  enderecoEntrega: string;
 
   @Column({
     type: 'enum',
@@ -41,8 +47,10 @@ export class Pedido {
   // N:1 - A padaria que vai atender o pedido
   @ManyToOne(() => Padaria)
   padaria: Padaria;
-  
+
   // 1:N - Os itens dentro do pedido (DetalhePedido)
-  @OneToMany(() => DetalhePedido, (detalhe) => detalhe.pedido, { cascade: true })
+  @OneToMany(() => DetalhePedido, (detalhe) => detalhe.pedido, {
+    cascade: true,
+  })
   itens: DetalhePedido[];
 }

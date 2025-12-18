@@ -14,7 +14,7 @@ export class AutenticacaoController {
   @Post('registro/cliente')
   async registrarCliente(@Body() dados: RegistroDto) {
     // Força a função para CLIENTE no registro
-    dados.funcao = FuncaoUsuario.CLIENTE; 
+    dados.funcao = FuncaoUsuario.CLIENTE;
     return this.autenticacaoService.registrar(dados, FuncaoUsuario.CLIENTE);
   }
 
@@ -23,9 +23,12 @@ export class AutenticacaoController {
   async registrarDonoPadaria(@Body() dados: RegistroDto) {
     // Força a função para DONO_PADARIA no registro
     dados.funcao = FuncaoUsuario.DONO_PADARIA;
-    return this.autenticacaoService.registrar(dados, FuncaoUsuario.DONO_PADARIA);
+    return this.autenticacaoService.registrar(
+      dados,
+      FuncaoUsuario.DONO_PADARIA,
+    );
   }
-  
+
   // Rota: POST /autenticacao/login
   @Post('login')
   async login(@Body() dados: LoginDto) {

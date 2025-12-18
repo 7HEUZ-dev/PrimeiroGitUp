@@ -1,13 +1,13 @@
-// backend/src/padarias/padarias.module.ts
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Padaria } from './padaria.entity'; // Importa a entidade Padaria
+import { PadariasService } from './padarias.service';
+import { PadariasController } from './padarias.controller';
+import { Padaria } from './padaria.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Padaria])],
-  controllers: [],
-  providers: [],
-  exports: [TypeOrmModule], // <--- ESSENCIAL: Exporta o repositório
+  providers: [PadariasService],
+  controllers: [PadariasController],
+  exports: [PadariasService],
 })
 export class PadariasModule {}

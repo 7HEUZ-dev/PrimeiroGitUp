@@ -1,6 +1,10 @@
 // backend/src/produtos/produtos.service.ts
 
-import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Produto } from './produto.entity';
@@ -12,10 +16,10 @@ export class ProdutosService {
   constructor(
     @InjectRepository(Produto)
     private produtoRepository: Repository<Produto>,
-    
+
     // Precisamos do repositório de Padaria para ligar o produto ao dono
-    @InjectRepository(Padaria) 
-    private padariaRepository: Repository<Padaria>, 
+    @InjectRepository(Padaria)
+    private padariaRepository: Repository<Padaria>,
   ) {}
 
   // ------------------------------------
@@ -24,10 +28,14 @@ export class ProdutosService {
 
   async criarProduto(donoId: number, dados: CriarProdutoDto): Promise<Produto> {
     // 1. Encontra a Padaria associada ao Dono
-    const padaria = await this.padariaRepository.findOne({ where: { dono: { id: donoId } } });
-    
+    const padaria = await this.padariaRepository.findOne({
+      where: { dono: { id: donoId } },
+    });
+
     if (!padaria) {
-      throw new UnauthorizedException('Usuário não é dono de uma padaria registrada.');
+      throw new UnauthorizedException(
+        'Usuário não é dono de uma padaria registrada.',
+      );
     }
 
     // 2. Cria o produto e associa à padaria
@@ -59,7 +67,9 @@ export class ProdutosService {
     });
 
     if (!produtos || produtos.length === 0) {
-        throw new NotFoundException('Padaria não encontrada ou sem produtos disponíveis.');
+      throw new NotFoundException(
+        'Padaria não encontrada ou sem produtos disponíveis.',
+      );
     }
     return produtos;
   }

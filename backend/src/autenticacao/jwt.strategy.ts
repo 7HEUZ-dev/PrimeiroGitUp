@@ -2,14 +2,15 @@
 
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { FuncaoUsuario } from '../usuarios/usuario.entity';
 
 // Define a estrutura que o JWT Payload terá
 export interface JwtPayload {
   email: string;
   sub: number; // ID do usuário
-  funcao: string;
+  funcao: FuncaoUsuario;
 }
 
 @Injectable()
@@ -19,18 +20,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // Extrai o JWT do cabeçalho 'Authorization: Bearer <token>'
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // Lê a chave secreta que definimos no banco.env
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'chave_de_fallback_insegura',
+    secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
     });
   }
 
   // O método validate é chamado após a validação do token
-  async validate(payload: JwtPayload): Promise<any> {
-    // Retorna o payload para que ele seja anexado ao objeto Request (req.user)
-    return { 
-      userId: payload.sub, 
-      email: payload.email, 
-      funcao: payload.funcao 
+  validate(payload: JwtPayload): any {
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      funcao: payload.funcao,
     };
   }
 }

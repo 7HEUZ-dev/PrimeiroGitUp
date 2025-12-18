@@ -19,12 +19,12 @@ export class Produto {
 
   @Column({ type: 'int', default: 0 })
   estoque: number; // Estoque
-  
+
   @Column({ type: 'int', default: 0 })
   totalVendido: number; // Para o cálculo de lucro
 
   @Column({ type: 'boolean', default: true })
-  disponivel: boolean; 
+  disponivel: boolean;
 
   // N:1 - Pertence a uma Padaria
   @ManyToOne(() => Padaria, (padaria) => padaria.produtos)

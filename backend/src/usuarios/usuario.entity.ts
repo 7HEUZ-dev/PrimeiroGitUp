@@ -3,12 +3,12 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 export enum FuncaoUsuario {
-  CLIENTE = 'cliente',        
-  DONO_PADARIA = 'dono_padaria', 
-  ADMIN = 'admin',          
+  CLIENTE = 'cliente',
+  DONO_PADARIA = 'dono_padaria',
+  ADMIN = 'admin',
 }
 
-@Entity('usuarios') 
+@Entity('usuarios')
 export class Usuario {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,12 +16,12 @@ export class Usuario {
   @Column({ type: 'varchar', unique: true })
   email: string;
 
-  @Column({ type: 'varchar', select: false }) 
+  @Column({ type: 'varchar', select: false })
   senha: string;
 
   @Column({ type: 'varchar' })
   nome: string;
-  
+
   @Column({
     type: 'enum',
     enum: FuncaoUsuario,
@@ -30,5 +30,5 @@ export class Usuario {
   funcao: FuncaoUsuario;
 
   @Column({ type: 'varchar', nullable: true })
-  endereco: string; 
+  endereco: string;
 }

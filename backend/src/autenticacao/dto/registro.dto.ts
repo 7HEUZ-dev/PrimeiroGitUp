@@ -1,4 +1,3 @@
-
 import { FuncaoUsuario } from '../../usuarios/usuario.entity';
 
 export class RegistroDto {
@@ -6,5 +5,6 @@ export class RegistroDto {
   email: string;
   senha: string;
   endereco?: string;
-  funcao: FuncaoUsuario; 
+  nomePadaria?: string; // Opcional, apenas para Dono
+  funcao: FuncaoUsuario;
 }

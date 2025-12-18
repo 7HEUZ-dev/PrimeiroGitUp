@@ -4,6 +4,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
 import { SetMetadata } from '@nestjs/common';
+import { JwtPayload } from './jwt.strategy';
 
 // Decorator que será usado nas rotas para definir as permissões
 export const FUNCOES_KEY = 'funcoes';
@@ -15,18 +16,19 @@ export class FuncaoGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const funcoesRequeridas = this.reflector.getAllAndOverride<FuncaoUsuario[]>(FUNCOES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const funcoesRequeridas = this.reflector.getAllAndOverride<FuncaoUsuario[]>(
+      FUNCOES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!funcoesRequeridas) {
       return true; // Se nenhuma função for definida, permite acesso
     }
 
-    const { user } = context.switchToHttp().getRequest();
-    
-    // Verifica se a função do usuário logado está inclusa nas funções requeridas
+    const req = context
+      .switchToHttp()
+      .getRequest<{ user: JwtPayload & { sub: number } }>();
+    const user = req.user;
     return funcoesRequeridas.some((funcao) => user.funcao === funcao);
   }
 }
