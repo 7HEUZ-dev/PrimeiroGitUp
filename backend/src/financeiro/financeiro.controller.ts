@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FinanceiroService } from './financeiro.service';
 import { CobrancaService } from './cobranca.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,7 +25,7 @@ export class FinanceiroController {
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
   criarGasto(
-    @Param('padariaId') padariaId: number,
+    @Param('padariaId', ParseIntPipe) padariaId: number,
     @Body() dados: CriarGastoDto,
   ) {
     return this.financeiroService.criarGasto(dados, padariaId);
@@ -26,28 +34,28 @@ export class FinanceiroController {
   @Get('gastos/:padariaId')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  listarGastos(@Param('padariaId') padariaId: number) {
+  listarGastos(@Param('padariaId', ParseIntPipe) padariaId: number) {
     return this.financeiroService.listarGastos(padariaId);
   }
 
   @Get('vendas/:padariaId')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  listarVendas(@Param('padariaId') padariaId: number) {
+  listarVendas(@Param('padariaId', ParseIntPipe) padariaId: number) {
     return this.financeiroService.listarVendas(padariaId);
   }
 
   @Get('balanco/:padariaId')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  obterBalanco(@Param('padariaId') padariaId: number) {
+  obterBalanco(@Param('padariaId', ParseIntPipe) padariaId: number) {
     return this.financeiroService.balanco(padariaId);
   }
 
   @Get('fatura/:padariaId')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  obterFatura(@Param('padariaId') padariaId: number) {
+  obterFatura(@Param('padariaId', ParseIntPipe) padariaId: number) {
     return this.cobrancaService.calcularFatura(padariaId);
   }
 }

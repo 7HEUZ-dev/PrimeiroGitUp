@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 // Auth
 import LoginScreen from '../screens/Auth/LoginScreen';
+import RegisterScreen from '../screens/Auth/RegisterSceen';
 
 // Client
 import BakeryListScreen from '../screens/Client/BakeryListScreen';
@@ -47,9 +48,9 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={ClientStack} />
         <Stack.Screen name="DonoHome" component={OwnerDrawer} />
-        {/* Adicione RegisterScreen aqui depois */}
       </Stack.Navigator>
     </NavigationContainer>
   );

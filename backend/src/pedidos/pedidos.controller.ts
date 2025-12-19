@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
 import { StatusPedido } from './pedido.entity';
@@ -28,12 +29,12 @@ export class PedidosController {
   @Get('padaria/:padariaId')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  listarPorPadaria(@Param('padariaId') padariaId: number) {
+  listarPorPadaria(@Param('padariaId', ParseIntPipe) padariaId: number) {
     return this.pedidosService.listarPedidosPorPadaria(padariaId);
   }
 
   @Get('cliente/:clienteId')
-  listarPorCliente(@Param('clienteId') clienteId: number) {
+  listarPorCliente(@Param('clienteId', ParseIntPipe) clienteId: number) {
     return this.pedidosService.listarPedidosPorCliente(clienteId);
   }
 
@@ -41,7 +42,7 @@ export class PedidosController {
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
   atualizarStatus(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body('status') status: StatusPedido,
   ) {
     return this.pedidosService.atualizarStatus(id, status);

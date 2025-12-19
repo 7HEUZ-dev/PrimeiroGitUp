@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PadariasService } from './padarias.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,12 +24,12 @@ export class PadariasController {
   }
 
   @Get(':id')
-  buscarPorId(@Param('id') id: number) {
+  buscarPorId(@Param('id', ParseIntPipe) id: number) {
     return this.padariasService.buscarPorId(id);
   }
 
   @Get('dono/:donoId')
-  buscarPorDono(@Param('donoId') donoId: number) {
+  buscarPorDono(@Param('donoId', ParseIntPipe) donoId: number) {
     return this.padariasService.buscarPorDono(donoId);
   }
 

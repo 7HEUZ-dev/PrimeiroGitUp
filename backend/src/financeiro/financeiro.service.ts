@@ -18,8 +18,11 @@ export class FinanceiroService {
   ) {}
 
   async criarGasto(dados: Partial<Gasto>, padariaId: number): Promise<Gasto> {
+    const valorTotal =
+      Number(dados.quantidade ?? 0) * Number(dados.valorUnitario ?? 0);
     const gasto = this.gastoRepo.create({
       ...dados,
+      valorTotal,
       padaria: { id: padariaId } as Padaria,
     });
     return this.gastoRepo.save(gasto);

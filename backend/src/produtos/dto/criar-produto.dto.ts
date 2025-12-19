@@ -1,10 +1,30 @@
-// backend/src/produtos/dto/criar-produto.dto.ts
-// Usado tanto para criar quanto para atualizar
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MinLength,
+} from 'class-validator';
+
 export class CriarProdutoDto {
+  @IsString()
+  @MinLength(2)
   nome: string;
+
+  @IsString()
+  @IsOptional()
   descricao?: string;
+
+  @IsNumber()
+  @IsPositive()
   preco: number;
+
+  @IsInt()
+  @IsPositive()
   estoque: number;
+
+  @IsBoolean()
   disponivel: boolean;
-  // O ID da padaria será inserido pelo Service, baseado no usuário logado
 }
