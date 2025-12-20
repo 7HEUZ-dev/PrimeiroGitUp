@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { createConnection } from 'mysql2/promise';
 
 // --- IMPORTS DE ENTIDADES E MÓDULOS (PORTUGUÊS) ---
 import { Usuario } from './usuarios/usuario.entity';
@@ -33,18 +34,36 @@ import { FinanceiroModule } from './financeiro/financeiro.module';
     // Configuração da Conexão TypeORM
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
+      useFactory: async (configService: ConfigService) => {
+        const host = configService.get<string>('DB_HOST') ?? '127.0.0.1';
+        const portStr = configService.get<string>('DB_PORT') ?? '3306';
+        const port = Number.parseInt(portStr, 10);
+        const username = configService.get<string>('DB_USERNAME') ?? 'root';
+        const password = configService.get<string>('DB_PASSWORD') ?? '';
+        const database = configService.get<string>('DB_DATABASE') ?? 'padaria';
 
-        // LISTA ATUALIZADA: Incluindo Pedido e DetalhePedido
-        entities: [Usuario, Padaria, Produto, Pedido, DetalhePedido, Gasto],
-        synchronize: true, // Cria e atualiza as tabelas automaticamente
-      }),
+        try {
+          const conn = await createConnection({
+            host,
+            port,
+            user: username,
+            password,
+          });
+          await conn.query('CREATE DATABASE IF NOT EXISTS ??', [database]);
+          await conn.end();
+        } catch {}
+
+        return {
+          type: 'mysql',
+          host,
+          port,
+          username,
+          password,
+          database,
+          entities: [Usuario, Padaria, Produto, Pedido, DetalhePedido, Gasto],
+          synchronize: true,
+        };
+      },
       inject: [ConfigService],
     }),
 
