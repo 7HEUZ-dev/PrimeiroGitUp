@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscar • PãoQuentinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .searchbar{display:flex;gap:10px;align-items:center;margin:14px 0}
+    .searchbar input{flex:1;height:44px;border-radius:12px;border:1px solid #e5e7eb;padding:0 14px;outline:none}
+    .categories{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 18px}
+    .cat{display:flex;align-items:center;gap:10px;border:1px solid #e5e7eb;background:#fff;border-radius:14px;padding:8px 12px;cursor:pointer}
+    .cat.active{border-color:#fdba74;background:#fff7ed}
+    .promo{background:#fff7ed;border:1px solid #fde68a;border-radius:16px;padding:16px;margin:12px 0}
+    .promo .title{color:#0f172a;font-weight:700}
+    .promo .sub{color:#6b7280;margin-top:8px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.04)}
+    .card .cover{height:160px;background:#ddd}
+    .card .body{padding:12px}
+    .badge-open{position:absolute;top:10px;left:10px;background:#fef3c7;color:#111827;border-radius:999px;padding:4px 8px;font-weight:700}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .tag{background:#f1f5f9;color:#334155;border-radius:999px;padding:4px 10px;font-size:12px}
+    .card-meta{display:flex;gap:12px;margin-top:10px;color:#6b7280}
+    .filters-modal{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center}
+    .filters-content{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;max-width:420px;width:100%}
+    .location{display:flex;align-items:center;gap:8px;color:#6b7280;margin-top:6px}
+    .location a{color:#ea580c;text-decoration:none}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon">🍞</div>
+        <a class="brand-name" href="./index.html" style="text-decoration:none;color:inherit">PãoQuentinho</a>
+      </div>
+      <nav class="nav">
+        <a href="./index.html">Início</a>
+        <a href="./cliente.html">Buscar</a>
+        <a href="./meus-pedidos.html">Pedidos</a>
+        <a href="./perfil.html">Perfil</a>
+      </div>
+      <div class="header-actions"></div>
+    </div>
+  </header>
+  <main class="container" style="padding:20px 0 28px">
+    <div class="searchbar">
+      <input id="search" placeholder="Buscar padaria ou produto...">
+      <button id="btnFiltros" class="btn btn-white" title="Filtros">⚙️</button>
+    </div>
+    <div class="location">📍 <span id="locationText">Centro, São Paulo</span> • <a href="#" id="alterarLocal">Alterar</a></div>
+    <div class="categories">
+      <div class="cat" data-cat="Pães"><span class="feature-icon">🍞</span>Pães</div>
+      <div class="cat" data-cat="Doces"><span class="feature-icon">🍬</span>Doces</div>
+      <div class="cat" data-cat="Bolos"><span class="feature-icon">🍰</span>Bolos</div>
+      <div class="cat" data-cat="Café"><span class="feature-icon">☕</span>Café</div>
+      <div class="cat" data-cat="Salgados"><span class="feature-icon">🥟</span>Salgados</div>
+      <div class="cat" data-cat="Orgânicos"><span class="feature-icon">🌿</span>Orgânicos</div>
+    </div>
+    <div class="promo">
+      <div class="title">Oferta especial 🎉 Frete grátis no primeiro pedido!</div>
+      <div class="sub">Use o cupom <strong>NOVOCLIENTE</strong>. Válido apenas para clientes novos.</div>
+      <div style="margin-top:10px"><button class="btn btn-outline" id="aplicarCupom">Aplicar cupom</button></div>
+    </div>
+    <h2 class="section-title" style="text-align:left">Padarias próximas</h2>
+    <div id="count" class="section-sub" style="text-align:right"></div>
+    <div id="grid" class="grid"></div>
+  </main>
+  <div id="modalFiltros" class="filters-modal">
+    <div class="filters-content">
+      <h3>Filtros</h3>
+      <div class="field"><label>Distância máxima (km)</label><input id="fDist" type="number" min="1" placeholder="ex: 5"></div>
+      <div class="field"><label>Avaliação mínima (estrelas)</label><input id="fRate" type="number" min="1" max="5" step="0.1" placeholder="ex: 4.5"></div>
+      <div class="field"><label>Preço médio máximo (R$)</label><input id="fPreco" type="number" min="1" placeholder="ex: 20"></div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn-primary" id="salvarFiltros">Aplicar</button>
+        <button class="btn btn-white" id="fecharFiltros">Fechar</button>
+      </div>
+    </div>
+  </div>
+  </main>
+  <script>
+    const grid = document.getElementById('grid');
+    const count = document.getElementById('count');
+    const search = document.getElementById('search');
+    const locationText = document.getElementById('locationText');
+    const alterarLocal = document.getElementById('alterarLocal');
+    const modalFiltros = document.getElementById('modalFiltros');
+    const salvarFiltros = document.getElementById('salvarFiltros');
+    const fecharFiltros = document.getElementById('fecharFiltros');
+    const btnFiltros = document.getElementById('btnFiltros');
+    const aplicarCupom = document.getElementById('aplicarCupom');
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const clienteId = usuario?.id;
+    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
+    let padarias = [];
+    let catalogo = [];
+    let filtros = JSON.parse(localStorage.getItem('filtrosBusca') || '{}');
+    let categoriasSelecionadas = new Set();
+    const defaultLocation = localStorage.getItem('clienteLocal') || 'Centro, São Paulo';
+    locationText.textContent = defaultLocation;
+    function haversine(a,b){
+      if(!a || !b) return null;
+      const toRad = x=> x*Math.PI/180;
+      const R=6371; const dLat=toRad(b.lat-a.lat); const dLon=toRad(b.lng-a.lng);
+      const s1=Math.sin(dLat/2)**2; const s2=Math.sin(dLon/2)**2; const c=Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat));
+      return 2*R*Math.asin(Math.sqrt(s1 + c*s2));
+    }
+    function getPadariaCoords(p){ try{ return JSON.parse(localStorage.getItem('padaria:'+p.id) || 'null'); }catch{ return null; } }
+    function getClienteCoords(){ try{ return JSON.parse(localStorage.getItem('clienteCoords') || 'null'); }catch{ return null; } }
+    async function load(){
+      try{
+        const resP = await fetch('http://localhost:4000/padarias');
+        padarias = await resP.json();
+        const resC = await fetch('http://localhost:4000/produtos/catalogo');
+        catalogo = await resC.json();
+        render();
+      }catch(e){
+        grid.innerHTML = '<div class="feature-card"><div class="feature-title">Erro ao carregar</div><div class="feature-desc">Verifique se o backend está rodando em http://localhost:4000</div></div>';
+      }
+    }
+    function padariaCategorias(p){
+      const cats = new Set();
+      for(const prod of catalogo){ if(prod.padaria?.id===p.id && prod.categoria){ cats.add(prod.categoria); } }
+      return [...cats];
+    }
+    function padariaPrecoMedio(p){
+      const items = catalogo.filter(prod=>prod.padaria?.id===p.id);
+      if(!items.length) return null;
+      return items.reduce((acc,prod)=>acc+Number(prod.preco||0),0)/items.length;
+    }
+    function padariaDistanciaKm(p){
+      const c1 = getClienteCoords();
+      const c2 = getPadariaCoords(p);
+      const d = haversine(c1,c2);
+      return d ? Math.round(d*10)/10 : null;
+    }
+    function padariaAvaliacao(p){
+      const base = (p.entregasNoMes ?? 0) > 0 ? 4.6 + Math.min(0.3, (p.entregasNoMes/500)) : 4.8;
+      const count = Math.max(0, p.entregasNoMes ?? 0);
+      return { nota: Math.min(5, Math.round(base*10)/10), count };
+    }
+    function matchCategorias(p){
+      if(categoriasSelecionadas.size===0) return true;
+      const cats = padariaCategorias(p);
+      for(const c of categoriasSelecionadas){ if(cats.includes(c)) return true; }
+      return false;
+    }
+    function applyFiltros(list){
+      return list.filter(p=>{
+        if(!matchCategorias(p)) return false;
+        const precoMedio = padariaPrecoMedio(p);
+        if(filtros.preco && precoMedio && precoMedio > filtros.preco) return false;
+        const dist = padariaDistanciaKm(p);
+        if(filtros.dist && dist && dist > filtros.dist) return false;
+        const aval = padariaAvaliacao(p);
+        if(filtros.rate && aval.nota < filtros.rate) return false;
+        return true;
+      }).sort((a,b)=>{
+        const avalA = padariaAvaliacao(a).nota, avalB = padariaAvaliacao(b).nota;
+        const distA = padariaDistanciaKm(a) ?? Infinity, distB = padariaDistanciaKm(b) ?? Infinity;
+        const ativoScoreA = a.ativo ? 1 : 0, ativoScoreB = b.ativo ? 1 : 0;
+        return (ativoScoreB - ativoScoreA) || (avalB - avalA) || (distA - distB);
+      });
+    }
+    function render(){
+      const q = (search.value||'').toLowerCase();
+      const list = applyFiltros(padarias).filter(p=>{
+        if(q){
+          const hasProd = catalogo.some(prod=> prod.padaria?.id===p.id && (prod.nome||'').toLowerCase().includes(q));
+          const hasName = (p.nome||'').toLowerCase().includes(q);
+          return hasName || hasProd;
+        }
+        return true;
+      });
+      count.textContent = list.length + ' encontradas';
+      grid.innerHTML = list.map(p=>{
+        const cats = padariaCategorias(p).slice(0,3);
+        const precoMedio = padariaPrecoMedio(p);
+        const dist = padariaDistanciaKm(p);
+        const aval = padariaAvaliacao(p);
+        const status = p.ativo ? 'Aberto' : 'Fechado';
+        const capa = p.imagemUrl || 'https://images.unsplash.com/photo-1476514525535-07fb3b4dbf6b?q=80&w=1200&auto=format&fit=crop';
+        return `
+        <div class="card" style="cursor:pointer" onclick="location.href='./cardapio.html?padaria=${p.id}'">
+          <div class="cover" style="background:url('${capa}') center/cover; position:relative">
+            <div class="badge-open" style="background:${p.ativo?'#fde68a':'#e5e7eb'}">${status}</div>
+          </div>
+          <div class="body">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:700">${p.nome}</div>
+              <div style="color:#6b7280">⭐ ${aval.nota} (${aval.count})</div>
+            </div>
+            <div class="tags">${cats.map(c=> `<span class="tag">${c}</span>`).join('')}</div>
+            <div class="card-meta">
+              <div>⏱️ ${dist? (dist<1?'10–20 min':'20–30 min') : '—'}</div>
+              <div>📍 ${dist? dist+' km':'— km'}</div>
+              <div>🚚 ${precoMedio? 'Frete R$ '+Math.max(3, Math.round(precoMedio/10)) : '—'}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    document.querySelectorAll('.cat').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const cat = el.getAttribute('data-cat');
+        if(el.classList.contains('active')){ el.classList.remove('active'); categoriasSelecionadas.delete(cat); }
+        else { el.classList.add('active'); categoriasSelecionadas.add(cat); }
+        render();
+      });
+    });
+    search.addEventListener('input', render);
+    btnFiltros.onclick = ()=> modalFiltros.style.display='flex';
+    fecharFiltros.onclick = ()=> modalFiltros.style.display='none';
+    salvarFiltros.onclick = ()=>{
+      const dist = Number(document.getElementById('fDist').value)||undefined;
+      const rate = Number(document.getElementById('fRate').value)||undefined;
+      const preco = Number(document.getElementById('fPreco').value)||undefined;
+      filtros = { dist, rate, preco };
+      localStorage.setItem('filtrosBusca', JSON.stringify(filtros));
+      modalFiltros.style.display='none';
+      render();
+    };
+    alterarLocal.onclick = async (e)=>{
+      e.preventDefault();
+      const novo = prompt('Digite seu endereço (apenas texto). Para distância, cadastre coordenadas manualmente.');
+      if(novo){ localStorage.setItem('clienteLocal', novo); locationText.textContent = novo; }
+      const wantGeo = confirm('Quer usar sua localização atual do navegador?');
+      if(wantGeo && navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(pos=>{
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          localStorage.setItem('clienteCoords', JSON.stringify(coords));
+          render();
+        });
+      }
+    };
+    aplicarCupom.onclick = async ()=>{
+      if(!clienteId){ alert('Faça login para aplicar o cupom.'); return; }
+      try{
+        const r = await fetch('http://localhost:4000/pedidos/cliente/' + clienteId, { headers: auth });
+        const pedidos = await r.json();
+        if(Array.isArray(pedidos) && pedidos.length===0){
+          localStorage.setItem('cupom', 'NOVOCLIENTE');
+          alert('Cupom aplicado! Frete grátis será considerado no checkout.');
+        }else{
+          alert('Cupom válido apenas para novos clientes.');
+        }
+      }catch{ alert('Falha ao verificar elegibilidade do cupom.'); }
+    };
+    load();
+  </script>
+</body>
+</html>

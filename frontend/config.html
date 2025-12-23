@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurações • PãoQuentinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;background:#fffdf9}
+    .sidebar{border-right:1px solid #e5e7eb;background:#fff;padding:16px}
+    .side-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .menu{display:flex;flex-direction:column;gap:6px}
+    .menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#374151;text-decoration:none}
+    .menu a.active{background:#fff1e6;color:#111827}
+    .menu a .icon{width:28px;height:28px;border-radius:8px;background:#fff1e6;display:grid;place-items:center;color:#ea580c}
+    .view{padding:18px}
+    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .field input{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px}
+    .switch{display:inline-flex;align-items:center;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="brand-icon">🍞</div>
+        <div class="brand-name">PãoQuentinho</div>
+      </div>
+      <div class="menu">
+        <a href="./dono.html"><span class="icon">🏠</span>Dashboard</a>
+        <a href="./pedidos.html"><span class="icon">🧾</span>Pedidos</a>
+        <a href="./produtos.html"><span class="icon">📦</span>Produtos</a>
+        <a href="./clientes.html"><span class="icon">👥</span>Clientes</a>
+        <a href="./entregas.html"><span class="icon">🚚</span>Entregas</a>
+        <a href="./promocoes.html"><span class="icon">🏷️</span>Promoções</a>
+        <a href="./relatorios.html"><span class="icon">📊</span>Relatórios</a>
+        <a href="./avaliacoes.html"><span class="icon">💬</span>Avaliações</a>
+        <a href="./config.html" class="active"><span class="icon">⚙️</span>Configurações</a>
+        <a href="./index.html" class="btn btn-white" style="margin-top:8px">Ver loja</a>
+      </div>
+    </aside>
+    <main class="view">
+      <div class="topbar">
+        <div>
+          <div class="section-sub" id="padariaNome">Padaria</div>
+          <div class="section-title" style="text-align:left">Configurações da Loja</div>
+        </div>
+        <div class="brand-icon">JP</div>
+      </div>
+      <div class="panel">
+        <form id="formConfig">
+          <div class="field"><label>Nome</label><input id="cfgNome"></div>
+          <div class="field"><label>Endereço</label><input id="cfgEndereco"></div>
+          <div class="field"><label>Descrição</label><input id="cfgDescricao"></div>
+          <div class="field switch"><label>Loja aberta</label><input id="cfgAtivo" type="checkbox"></div>
+          <div><button class="btn btn-primary" type="submit">Salvar alterações</button></div>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const donoId = usuario?.id;
+    let padariaId = usuario?.padariaId;
+    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
+    async function getPadaria() {
+      if (padariaId) return padariaId;
+      if (!donoId) return null;
+      const r = await fetch('http://localhost:4000/padarias/dono/' + donoId);
+      const p = await r.json();
+      padariaId = p?.id;
+      return padariaId;
+    }
+    async function carregar(){
+      const pid = await getPadaria();
+      if(!pid) return;
+      const padariaResp = await fetch('http://localhost:4000/padarias/' + pid);
+      const padaria = await padariaResp.json();
+      document.getElementById('padariaNome').textContent = padaria?.nome || 'Padaria';
+      document.getElementById('cfgNome').value = padaria?.nome ?? '';
+      document.getElementById('cfgEndereco').value = padaria?.endereco ?? '';
+      document.getElementById('cfgDescricao').value = padaria?.descricao ?? '';
+      document.getElementById('cfgAtivo').checked = !!padaria?.ativo;
+    }
+    document.getElementById('formConfig').onsubmit = async (e)=>{
+      e.preventDefault();
+      const body = {
+        nome: document.getElementById('cfgNome').value || undefined,
+        endereco: document.getElementById('cfgEndereco').value || undefined,
+        descricao: document.getElementById('cfgDescricao').value || undefined,
+        ativo: document.getElementById('cfgAtivo').checked
+      };
+      const res = await fetch('http://localhost:4000/padarias/atualizar', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify(body)
+      });
+      if(res.ok){ alert('Configurações atualizadas'); carregar(); }
+      else{ alert('Falha ao atualizar'); }
+    };
+    carregar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do Dono • PãoQuentinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;background:#fffdf9}
+    .sidebar{border-right:1px solid #e5e7eb;background:#fff;padding:16px}
+    .side-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .menu{display:flex;flex-direction:column;gap:6px}
+    .menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#374151;text-decoration:none}
+    .menu a.active{background:#fff1e6;color:#111827}
+    .menu a .icon{width:28px;height:28px;border-radius:8px;background:#fff1e6;display:grid;place-items:center;color:#ea580c}
+    .view{padding:18px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
+    .card .title{color:#6b7280;margin-bottom:6px}
+    .card .value{font-family:'DM Serif Display',serif;font-size:28px}
+    .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:18px}
+    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px}
+    .panel h3{margin:0 0 10px}
+    .pedido{background:#fffdf7;border:1px solid #f1f5f9;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;gap:12px}
+    .pedido .info{flex:1}
+    .pedido .actions{display:flex;gap:8px}
+    .rank{list-style:none;margin:0;padding:0}
+    .rank li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee}
+    .quick-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.2);display:none;align-items:center;justify-content:center}
+    .modal .content{background:#fff;border-radius:16px;padding:16px;max-width:520px;width:100%;border:1px solid #e5e7eb}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .field input{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px}
+    .hidden{display:none}
+    .filters{display:flex;gap:8px;margin:10px 0 12px}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px dashed #eee;padding:10px;text-align:left}
+    .switch{display:inline-flex;align-items:center;gap:8px}
+  </style>
+  </head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="brand-icon">🍞</div>
+        <div class="brand-name">PãoQuentinho</div>
+      </div>
+      <div class="menu">
+        <a href="./dono.html" class="active"><span class="icon">🏠</span>Dashboard</a>
+        <a href="./pedidos.html"><span class="icon">🧾</span>Pedidos</a>
+        <a href="./produtos.html"><span class="icon">📦</span>Produtos</a>
+        <a href="./clientes.html"><span class="icon">👥</span>Clientes</a>
+        <a href="./entregas.html"><span class="icon">🚚</span>Entregas</a>
+        <a href="./promocoes.html"><span class="icon">🏷️</span>Promoções</a>
+        <a href="./relatorios.html"><span class="icon">📊</span>Relatórios</a>
+        <a href="./avaliacoes.html"><span class="icon">💬</span>Avaliações</a>
+        <a href="./config.html"><span class="icon">⚙️</span>Configurações</a>
+        <a href="./index.html" class="btn btn-white" style="margin-top:8px">Ver loja</a>
+      </div>
+    </aside>
+    <main class="view">
+      <div class="topbar">
+        <div>
+          <div class="section-sub" id="padariaNome">Padaria</div>
+          <div class="section-title" style="text-align:left">Bem-vindo, <span id="donoNome">Dono</span>!</div>
+        </div>
+        <div class="brand-icon">JP</div>
+      </div>
+      <section id="sec-dashboard">
+        <section class="cards">
+          <div class="card"><div class="title">Faturamento hoje</div><div class="value" id="fatHoje">R$ 0,00</div><div class="section-sub" id="fatTrend">—</div></div>
+          <div class="card"><div class="title">Pedidos hoje</div><div class="value" id="pedHoje">0</div><div class="section-sub" id="pedTrend">—</div></div>
+          <div class="card"><div class="title">Ticket médio</div><div class="value" id="ticketMedio">R$ 0,00</div><div class="section-sub" id="ticketTrend">—</div></div>
+          <div class="card"><div class="title">Novos clientes</div><div class="value" id="novosClientes">0</div><div class="section-sub" id="clientesTrend">—</div></div>
+        </section>
+        <section class="two-col">
+          <div class="panel">
+            <h3>Pedidos pendentes</h3>
+            <div id="listaPendentes"></div>
+            <div class="quick-actions">
+              <button class="btn btn-primary" id="abrirModalProduto">Adicionar produto</button>
+              <button class="btn btn-white" id="novoPedidoManual">Novo pedido manual</button>
+              <button class="btn btn-white" id="verClientes">Ver clientes</button>
+              <button class="btn btn-white" id="relatorioDia">Relatório do dia</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Mais vendidos hoje</h3>
+            <ul id="rankVendidos" class="rank"></ul>
+          </div>
+        </section>
+      </section>
+      <section id="sec-pedidos" class="hidden">
+        <div class="panel">
+          <h3>Pedidos</h3>
+          <div class="filters">
+            <button class="btn btn-white" data-status="todos">Todos</button>
+            <button class="btn btn-white" data-status="pendente">Em aberto</button>
+            <button class="btn btn-white" data-status="a_caminho">Saiu para entrega</button>
+            <button class="btn btn-white" data-status="entregue">Concluído</button>
+          </div>
+          <div id="listaPedidos"></div>
+        </div>
+      </section>
+      <section id="sec-produtos" class="hidden">
+        <div class="panel">
+          <h3>Produtos</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Produto</th><th>Preço</th><th>Estoque</th><th>Categoria</th><th>Disponível</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaProdutos"></tbody>
+          </table>
+          <div style="margin-top:12px">
+            <button class="btn btn-primary" id="abrirModalProduto2">Adicionar produto</button>
+          </div>
+        </div>
+      </section>
+      <section id="sec-clientes" class="hidden">
+        <div class="panel">
+          <h3>Clientes fiéis</h3>
+          <ul id="listaClientes" class="rank"></ul>
+        </div>
+      </section>
+      <section id="sec-config" class="hidden">
+        <div class="panel">
+          <h3>Configurações da Loja</h3>
+          <form id="formConfig">
+            <div class="field"><label>Nome</label><input id="cfgNome"></div>
+            <div class="field"><label>Endereço</label><input id="cfgEndereco"></div>
+            <div class="field"><label>Descrição</label><input id="cfgDescricao"></div>
+            <div class="field switch"><label>Loja aberta</label><input id="cfgAtivo" type="checkbox"></div>
+            <div><button class="btn btn-primary" type="submit">Salvar alterações</button></div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalProduto" class="modal">
+    <div class="content">
+      <h3>Novo produto</h3>
+      <form id="formProduto">
+        <div class="field"><label>Nome</label><input id="pNome" required></div>
+        <div class="field"><label>Preço</label><input id="pPreco" type="number" step="0.01" required></div>
+        <div class="field"><label>Estoque</label><input id="pEstoque" type="number" required></div>
+        <div class="field"><label>Categoria</label><input id="pCategoria"></div>
+        <div class="field"><label>Descrição</label><input id="pDescricao"></div>
+        <div class="actions"><button class="btn btn-primary" type="submit">Salvar</button><button class="btn btn-white" type="button" id="fecharModalProduto">Cancelar</button></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const donoId = usuario?.id;
+    let padariaId = usuario?.padariaId;
+    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
+    async function getPadaria() {
+      if (padariaId) return padariaId;
+      if (!donoId) return null;
+      const r = await fetch('http://localhost:4000/padarias/dono/' + donoId);
+      const p = await r.json();
+      padariaId = p?.id;
+      return padariaId;
+    }
+    function formatBRL(n){ return 'R$ ' + (Number(n||0)).toFixed(2).replace('.', ','); }
+    function isHoje(dateStr){ const d=new Date(dateStr); const t=new Date(); return d.getFullYear()==t.getFullYear() && d.getMonth()==t.getMonth() && d.getDate()==t.getDate(); }
+    async function carregarDados() {
+      document.getElementById('donoNome').textContent = usuario?.nome || 'Dono';
+      const pid = await getPadaria();
+      if (!pid) return;
+      const padariaResp = await fetch('http://localhost:4000/padarias/' + pid);
+      const padaria = await padariaResp.json();
+      document.getElementById('padariaNome').textContent = padaria?.nome || 'Padaria';
+      const pedidosResp = await fetch('http://localhost:4000/pedidos/padaria/' + pid, { headers: auth });
+      const pedidos = await pedidosResp.json();
+      const produtosResp = await fetch('http://localhost:4000/produtos/padaria/' + pid);
+      const produtos = await produtosResp.json();
+      // Métricas
+      const hoje = pedidos.filter(p => isHoje(p.dataPedido));
+      const ontem = pedidos.filter(p => {
+        const d=new Date(p.dataPedido); const t=new Date(); const y=new Date(t); y.setDate(t.getDate()-1);
+        return d.getFullYear()==y.getFullYear() && d.getMonth()==y.getMonth() && d.getDate()==y.getDate();
+      });
+      const fatH = hoje.reduce((acc,p)=>acc+Number(p.valorTotal),0);
+      const fatOnt = ontem.reduce((acc,p)=>acc+Number(p.valorTotal),0);
+      document.getElementById('fatHoje').textContent = formatBRL(fatH);
+      document.getElementById('fatTrend').textContent = fatOnt? ((fatH-fatOnt)/fatOnt*100).toFixed(0)+'% vs ontem' : '—';
+      document.getElementById('pedHoje').textContent = hoje.length;
+      document.getElementById('pedTrend').textContent = ontem.length? ((hoje.length-ontem.length)/ontem.length*100).toFixed(0)+'% vs ontem' : '—';
+      const ticket = hoje.length? fatH/hoje.length : 0;
+      document.getElementById('ticketMedio').textContent = formatBRL(ticket);
+      document.getElementById('ticketTrend').textContent = '—';
+      const clientesHoje = new Set(hoje.map(p=>p.cliente?.id));
+      const novos = [...clientesHoje].filter(id => {
+        const hist = pedidos.filter(p => p.cliente?.id===id);
+        const minDate = hist.reduce((m,p)=> m && new Date(m) < new Date(p.dataPedido) ? m : p.dataPedido, null);
+        return minDate && isHoje(minDate);
+      }).length;
+      document.getElementById('novosClientes').textContent = novos;
+      // Pendentes
+      const pend = pedidos.filter(p => p.status === 'pendente');
+      const list = document.getElementById('listaPendentes');
+      list.innerHTML = pend.map(p => `
+        <div class="pedido">
+          <div class="info">
+            <div><strong>#${p.id}</strong> • ${p.cliente?.nome ?? 'Cliente'}</div>
+            <div>${p.itens.map(i => `${i.quantidade}x ${i.produto?.nome}`).join(', ')}</div>
+            <div>${formatBRL(p.valorTotal)} • ${p.enderecoEntrega}</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="atualizarStatus(${p.id}, 'em_preparacao')">Aceitar</button>
+            <button class="btn btn-white" onclick="recusar(${p.id})">Recusar</button>
+          </div>
+        </div>
+      `).join('');
+      // Ranking
+      const rank = [...produtos].sort((a,b)=> (b.totalVendido||0)-(a.totalVendido||0)).slice(0,5);
+      const rEl = document.getElementById('rankVendidos');
+      rEl.innerHTML = rank.map((p,i)=> `<li><span>${i+1}. ${p.nome}</span><span>${p.totalVendido||0} vendas</span></li>`).join('');
+    }
+    async function atualizarStatus(id, status){
+      await fetch('http://localhost:4000/pedidos/' + id + '/status', {
+        method:'PATCH',
+        headers: { 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify({ status })
+      });
+      carregarDados();
+    }
+    async function recusar(id){
+      const motivo = prompt('Motivo da recusa (ex: Produto esgotado)');
+      await atualizarStatus(id, 'cancelado');
+      alert('Pedido #' + id + ' recusado: ' + (motivo || ''));
+    }
+    // Modal produto
+    const modal = document.getElementById('modalProduto');
+    document.getElementById('abrirModalProduto').onclick = ()=> modal.style.display='flex';
+    document.getElementById('fecharModalProduto').onclick = ()=> modal.style.display='none';
+    document.getElementById('formProduto').onsubmit = async (e)=>{
+      e.preventDefault();
+      const body = {
+        nome: document.getElementById('pNome').value,
+        preco: Number(document.getElementById('pPreco').value),
+        estoque: Number(document.getElementById('pEstoque').value),
+        descricao: document.getElementById('pDescricao').value || undefined,
+        categoria: document.getElementById('pCategoria').value || undefined
+      };
+      const res = await fetch('http://localhost:4000/produtos', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify(body)
+      });
+      if(res.ok){ alert('Produto criado'); modal.style.display='none'; carregarDados(); }
+      else{ alert('Falha ao criar produto'); }
+    };
+    document.getElementById('novoPedidoManual').onclick = ()=> { switchSection('pedidos'); alert('Registre a venda manual no sistema (a implementar).'); };
+    document.getElementById('verClientes').onclick = ()=> switchSection('clientes');
+    document.getElementById('relatorioDia').onclick = ()=> { switchSection('relatorios'); alert('Relatório do dia (a implementar).'); };
+    function switchSection(key){
+      document.querySelectorAll('.menu a[data-section]').forEach(a=> a.classList.remove('active'));
+      const link = document.querySelector(`.menu a[data-section="${key}"]`);
+      if(link) link.classList.add('active');
+      document.querySelectorAll('main > section').forEach(sec=> sec.classList.add('hidden'));
+      const alvo = document.getElementById('sec-' + key);
+      if(alvo) alvo.classList.remove('hidden');
+      if(key==='pedidos'){ carregarPedidos('todos'); }
+      if(key==='produtos'){ carregarProdutos(); }
+      if(key==='clientes'){ carregarClientes(); }
+      if(key==='config'){ carregarConfig(); }
+    }
+    document.querySelectorAll('.menu a[data-section]').forEach(a=>{
+      a.addEventListener('click', ()=>{
+        const key = a.getAttribute('data-section');
+        switchSection(key);
+      });
+    });
+    async function carregarPedidos(status='todos'){
+      const pid = await getPadaria();
+      if(!pid) return;
+      const pedidosResp = await fetch('http://localhost:4000/pedidos/padaria/' + pid, { headers: auth });
+      const pedidos = await pedidosResp.json();
+      const alvo = document.getElementById('listaPedidos');
+      const filtro = status==='todos' ? pedidos : pedidos.filter(p=>p.status===status);
+      alvo.innerHTML = filtro.map(p => `
+        <div class="pedido">
+          <div class="info">
+            <div><strong>#${p.id}</strong> • ${p.cliente?.nome ?? 'Cliente'}</div>
+            <div>${p.itens.map(i => `${i.quantidade}x ${i.produto?.nome}`).join(', ')}</div>
+            <div>${formatBRL(p.valorTotal)} • ${p.enderecoEntrega}</div>
+          </div>
+          <div class="actions">
+            ${p.status==='pendente' ? `<button class="btn btn-primary" onclick="atualizarStatus(${p.id}, 'em_preparacao')">Aceitar</button>
+            <button class="btn btn-white" onclick="recusar(${p.id})">Recusar</button>` : ''}
+            ${p.status==='em_preparacao' ? `<button class="btn btn-primary" onclick="atualizarStatus(${p.id}, 'a_caminho')">Saiu para entrega</button>` : ''}
+            ${p.status==='a_caminho' ? `<button class="btn btn-primary" onclick="atualizarStatus(${p.id}, 'entregue')">Concluir</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+      document.querySelectorAll('#sec-pedidos .filters .btn').forEach(btn=>{
+        btn.onclick = ()=> carregarPedidos(btn.getAttribute('data-status') || 'todos');
+      });
+    }
+    async function carregarProdutos(){
+      const pid = await getPadaria();
+      if(!pid) return;
+      const produtosResp = await fetch('http://localhost:4000/produtos/padaria/' + pid);
+      const produtos = await produtosResp.json();
+      const tbody = document.getElementById('tabelaProdutos');
+      tbody.innerHTML = produtos.map(p => `
+        <tr>
+          <td>${p.nome}</td>
+          <td>${formatBRL(p.preco)}</td>
+          <td>${p.estoque ?? 0}</td>
+          <td>${p.categoria ?? '-'}</td>
+          <td>${p.disponivel ? 'Sim' : 'Não'}</td>
+          <td>
+            <button class="btn btn-white" onclick="toggleDisponivel(${p.id}, ${p.disponivel ? 'false':'true'})">${p.disponivel?'Pausar':'Retomar'}</button>
+            <button class="btn btn-white" onclick="editarProduto(${p.id})">Editar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    async function toggleDisponivel(id, novo){
+      await fetch('http://localhost:4000/produtos/disponivel/' + id, {
+        method:'PATCH',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify({ disponivel: novo })
+      });
+      carregarProdutos();
+      carregarDados();
+    }
+    async function editarProduto(id){
+      const preco = prompt('Novo preço (usar ponto):');
+      const estoque = prompt('Novo estoque (número inteiro):');
+      const categoria = prompt('Categoria (ex: Pães, Doces, Bebidas):');
+      const body = {};
+      if(preco) body.preco = Number(preco);
+      if(estoque) body.estoque = Number(estoque);
+      if(categoria) body.categoria = categoria;
+      if(Object.keys(body).length===0){ return; }
+      await fetch('http://localhost:4000/produtos/' + id, {
+        method:'PATCH',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify(body)
+      });
+      carregarProdutos();
+      carregarDados();
+    }
+    async function carregarClientes(){
+      const pid = await getPadaria();
+      if(!pid) return;
+      const pedidosResp = await fetch('http://localhost:4000/pedidos/padaria/' + pid, { headers: auth });
+      const pedidos = await pedidosResp.json();
+      const cont = document.getElementById('listaClientes');
+      const mapa = new Map();
+      for(const p of pedidos){
+        const id = p.cliente?.id;
+        if(!id) continue;
+        mapa.set(id, { nome: p.cliente?.nome ?? 'Cliente', total: (mapa.get(id)?.total ?? 0) + 1 });
+      }
+      const lista = [...mapa.values()].sort((a,b)=>b.total-a.total).slice(0,10);
+      cont.innerHTML = lista.map((c,i)=> `<li><span>${i+1}. ${c.nome}</span><span>${c.total} pedidos</span></li>`).join('');
+    }
+    async function carregarConfig(){
+      const pid = await getPadaria();
+      if(!pid) return;
+      const padariaResp = await fetch('http://localhost:4000/padarias/' + pid);
+      const padaria = await padariaResp.json();
+      document.getElementById('cfgNome').value = padaria?.nome ?? '';
+      document.getElementById('cfgEndereco').value = padaria?.endereco ?? '';
+      document.getElementById('cfgDescricao').value = padaria?.descricao ?? '';
+      document.getElementById('cfgAtivo').checked = !!padaria?.ativo;
+    }
+    document.getElementById('abrirModalProduto2').onclick = ()=> modal.style.display='flex';
+    document.getElementById('formConfig').onsubmit = async (e)=>{
+      e.preventDefault();
+      const body = {
+        nome: document.getElementById('cfgNome').value || undefined,
+        endereco: document.getElementById('cfgEndereco').value || undefined,
+        descricao: document.getElementById('cfgDescricao').value || undefined,
+        ativo: document.getElementById('cfgAtivo').checked
+      };
+      const res = await fetch('http://localhost:4000/padarias/atualizar', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify(body)
+      });
+      if(res.ok){ alert('Configurações atualizadas'); carregarDados(); }
+      else{ alert('Falha ao atualizar'); }
+    };
+    // Atualiza periodicamente
+    carregarDados();
+    switchSection('dashboard');
+    setInterval(carregarDados, 10000);
+  </script>
+</body>
+</html>

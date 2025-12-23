@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meus Pedidos • PãoQuentinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .container{max-width:1000px}
+    .pedido{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:12px;margin:10px 0;display:flex;justify-content:space-between;gap:12px}
+    .pedido .info{flex:1}
+    .pedido .status{font-weight:700}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon">🍞</div>
+        <a class="brand-name" href="./index.html" style="text-decoration:none;color:inherit">PãoQuentinho</a>
+      </div>
+      <nav class="nav">
+        <a href="./cliente.html">Buscar</a>
+        <a href="./meus-pedidos.html">Pedidos</a>
+        <a href="./perfil.html">Perfil</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container" style="padding:20px 0 28px">
+    <div class="section-title" style="text-align:left">Meus Pedidos</div>
+    <div id="lista"></div>
+  </main>
+  <script>
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const clienteId = usuario?.id;
+    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
+    const lista = document.getElementById('lista');
+    function formatBRL(n){ return 'R$ ' + (Number(n||0)).toFixed(2).replace('.', ','); }
+    async function load(){
+      if(!clienteId){ lista.innerHTML='Faça login para ver seus pedidos.'; return; }
+      const r = await fetch('http://localhost:4000/pedidos/cliente/' + clienteId, { headers: auth });
+      const pedidos = await r.json();
+      lista.innerHTML = pedidos.map(p=> `
+        <div class="pedido">
+          <div class="info">
+            <div><strong>#${p.id}</strong> • ${p.padaria?.nome ?? 'Padaria'}</div>
+            <div>${p.itens.map(i => `${i.quantidade}x ${i.produto?.nome}`).join(', ')}</div>
+            <div>${formatBRL(p.valorTotal)} • ${p.enderecoEntrega}</div>
+          </div>
+          <div class="status">${p.status}</div>
+        </div>
+      `).join('');
+    }
+    load();
+  </script>
+</body>
+</html>

@@ -34,4 +34,16 @@ export class PadariasService {
       relations: ['produtos'],
     });
   }
+
+  async atualizarPorDono(
+    donoId: number,
+    dados: Partial<Pick<Padaria, 'endereco' | 'ativo' | 'descricao' | 'nome'>>,
+  ) {
+    const padaria = await this.padariaRepo.findOne({
+      where: { dono: { id: donoId } },
+    });
+    if (!padaria) return null;
+    Object.assign(padaria, dados);
+    return this.padariaRepo.save(padaria);
+  }
 }

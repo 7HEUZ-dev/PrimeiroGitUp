@@ -26,6 +26,12 @@ export class Produto {
   @Column({ type: 'boolean', default: true })
   disponivel: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  categoria: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  imagemUrl: string;
+
   // N:1 - Pertence a uma Padaria
   @ManyToOne(() => Padaria, (padaria) => padaria.produtos)
   padaria: Padaria;

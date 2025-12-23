@@ -73,4 +73,64 @@ export class ProdutosService {
     }
     return produtos;
   }
+
+  // Atualiza disponibilidade (pausar venda) garantindo que o produto é da padaria do dono
+  async atualizarDisponibilidade(
+    donoId: number,
+    produtoId: number,
+    disponivel: boolean,
+  ): Promise<Produto> {
+    const padaria = await this.padariaRepository.findOne({
+      where: { dono: { id: donoId } },
+    });
+    if (!padaria) {
+      throw new UnauthorizedException(
+        'Usuário não é dono de uma padaria registrada.',
+      );
+    }
+    const produto = await this.produtoRepository.findOne({
+      where: { id: produtoId },
+      relations: ['padaria'],
+    });
+    if (!produto || produto.padaria.id !== padaria.id) {
+      throw new UnauthorizedException('Produto não pertence à sua padaria.');
+    }
+    produto.disponivel = disponivel;
+    return this.produtoRepository.save(produto);
+  }
+
+  async atualizarProduto(
+    donoId: number,
+    produtoId: number,
+    dados: Partial<
+      Pick<
+        Produto,
+        | 'nome'
+        | 'descricao'
+        | 'preco'
+        | 'estoque'
+        | 'categoria'
+        | 'imagemUrl'
+        | 'disponivel'
+      >
+    >,
+  ): Promise<Produto> {
+    const padaria = await this.padariaRepository.findOne({
+      where: { dono: { id: donoId } },
+    });
+    if (!padaria) {
+      throw new UnauthorizedException(
+        'Usuário não é dono de uma padaria registrada.',
+      );
+    }
+    const produto = await this.produtoRepository.findOne({
+      where: { id: produtoId },
+      relations: ['padaria'],
+    });
+    if (!produto || produto.padaria.id !== padaria.id) {
+      throw new UnauthorizedException('Produto não pertence à sua padaria.');
+    }
+    Object.assign(produto, dados);
+    return this.produtoRepository.save(produto);
+  }
 }

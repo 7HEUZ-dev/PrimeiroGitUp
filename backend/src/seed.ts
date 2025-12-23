@@ -61,6 +61,48 @@ async function bootstrap() {
   await dataSource.getRepository(Produto).save(p2);
   console.log('✅ Produtos Criados: Pão e Bolo');
 
+  // 3.1 Criar segunda Padaria de teste com seu Dono e Produtos
+  const dono2 = new Usuario();
+  dono2.nome = 'Carlos Dono';
+  dono2.email = 'dono@padariateste.com';
+  dono2.senha = senhaHash;
+  dono2.funcao = FuncaoUsuario.DONO_PADARIA;
+  dono2.endereco = 'Rua Teste, 123';
+  await dataSource.getRepository(Usuario).save(dono2);
+  console.log('✅ Dono Criado:', dono2.email);
+
+  const padariaTeste = new Padaria();
+  padariaTeste.nome = 'Padaria Teste';
+  padariaTeste.endereco = 'Rua Teste, 123';
+  padariaTeste.dono = dono2;
+  await dataSource.getRepository(Padaria).save(padariaTeste);
+  console.log('✅ Padaria Criada:', padariaTeste.nome);
+
+  const pt1 = new Produto();
+  pt1.nome = 'Pão Francês';
+  pt1.preco = 0.8;
+  pt1.estoque = 200;
+  pt1.categoria = 'Pães';
+  pt1.padaria = padariaTeste;
+  await dataSource.getRepository(Produto).save(pt1);
+
+  const pt2 = new Produto();
+  pt2.nome = 'Bolo de Cenoura';
+  pt2.preco = 25.0;
+  pt2.estoque = 20;
+  pt2.categoria = 'Doces';
+  pt2.padaria = padariaTeste;
+  await dataSource.getRepository(Produto).save(pt2);
+
+  const pt3 = new Produto();
+  pt3.nome = 'Café Expresso';
+  pt3.preco = 5.0;
+  pt3.estoque = 200;
+  pt3.categoria = 'Bebidas';
+  pt3.padaria = padariaTeste;
+  await dataSource.getRepository(Produto).save(pt3);
+  console.log('✅ Produtos Criados na Padaria Teste: Pão, Bolo e Café');
+
   // 4. Criar Cliente
   const cliente = new Usuario();
   cliente.nome = 'Maria Cliente';

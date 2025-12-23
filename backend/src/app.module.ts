@@ -51,7 +51,9 @@ import { FinanceiroModule } from './financeiro/financeiro.module';
           });
           await conn.query('CREATE DATABASE IF NOT EXISTS ??', [database]);
           await conn.end();
-        } catch {}
+        } catch {
+          void 0;
+        }
 
         return {
           type: 'mysql',

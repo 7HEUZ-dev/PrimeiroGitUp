@@ -43,4 +43,21 @@ export class PadariasController {
     const donoId = req.user.userId;
     return this.padariasService.criar(dados, donoId);
   }
+
+  @Post('atualizar')
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @Funcoes(FuncaoUsuario.DONO_PADARIA)
+  atualizar(
+    @Body()
+    dados: Partial<{
+      endereco: string;
+      ativo: boolean;
+      descricao: string;
+      nome: string;
+    }>,
+    @Req() req: { user: { userId: number } },
+  ) {
+    const donoId = req.user.userId;
+    return this.padariasService.atualizarPorDono(donoId, dados as any);
+  }
 }

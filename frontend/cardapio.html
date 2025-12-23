@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cardápio • PãoQuentinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .container{max-width:1000px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px}
+    .item{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:12px}
+    .item-top{display:flex;justify-content:space-between;align-items:center}
+    .item-sub{color:#6b7280}
+    .cart{position:fixed;right:24px;bottom:24px;background:#111827;color:#fff;border-radius:16px;padding:12px 16px}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon">🍞</div>
+        <a class="brand-name" href="./index.html" style="text-decoration:none;color:inherit">PãoQuentinho</a>
+      </div>
+      <nav class="nav">
+        <a href="./cliente.html">Buscar</a>
+        <a href="./meus-pedidos.html">Pedidos</a>
+        <a href="./perfil.html">Perfil</a>
+      </nav>
+      <div class="header-actions"></div>
+    </div>
+  </header>
+  <main class="container" style="padding:20px 0 28px">
+    <div>
+      <div class="section-sub" id="padariaNome">Padaria</div>
+      <div class="section-title" style="text-align:left">Cardápio</div>
+    </div>
+    <div style="margin:10px 0"><input id="q" placeholder="Buscar produto..." style="width:100%;height:44px;border-radius:12px;border:1px solid #e5e7eb;padding:0 14px;outline:none"></div>
+    <div id="grid" class="grid"></div>
+  </main>
+  <div class="cart">
+    <div>Carrinho: <span id="cartCount">0</span> itens</div>
+    <div>Total: <span id="cartTotal">R$ 0,00</span></div>
+    <div style="margin-top:8px"><button class="btn btn-outline" id="finalizar">Finalizar pedido</button></div>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const padariaId = params.get('padaria');
+    const grid = document.getElementById('grid');
+    const q = document.getElementById('q');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const clienteId = usuario?.id;
+    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
+    let produtos = [];
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    function formatBRL(n){ return 'R$ ' + (Number(n||0)).toFixed(2).replace('.', ','); }
+    async function load(){
+      if(!padariaId){ grid.innerHTML='Padaria não informada.'; return; }
+      const padariaResp = await fetch('http://localhost:4000/padarias/' + padariaId);
+      const padaria = await padariaResp.json();
+      document.getElementById('padariaNome').textContent = padaria?.nome || 'Padaria';
+      const res = await fetch('http://localhost:4000/produtos/padaria/' + padariaId);
+      produtos = await res.json();
+      render();
+      updateCart();
+    }
+    function render(){
+      const query = (q.value||'').toLowerCase();
+      const list = produtos.filter(p=> (p.nome||'').toLowerCase().includes(query));
+      grid.innerHTML = list.map(p=> `
+        <div class="item">
+          <div class="item-top">
+            <div style="font-weight:700">${p.nome}</div>
+            <div>${formatBRL(p.preco)}</div>
+          </div>
+          <div class="item-sub">${p.descricao || ''}</div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn btn-white" onclick="add(${p.id})">Adicionar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function add(id){
+      const item = produtos.find(x=>x.id===id);
+      if(!item) return;
+      const existing = cart.find(x=>x.id===id);
+      if(existing) existing.qtd += 1;
+      else cart.push({ id, nome:item.nome, preco:item.preco, qtd:1 });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCart();
+    }
+    function updateCart(){
+      const total = cart.reduce((acc,i)=>acc + Number(i.preco)*i.qtd, 0);
+      cartCount.textContent = cart.reduce((acc,i)=>acc + i.qtd, 0);
+      cartTotal.textContent = formatBRL(total);
+    }
+    document.getElementById('finalizar').onclick = async ()=>{
+      if(!clienteId){ alert('Faça login para finalizar.'); return; }
+      if(cart.length===0){ alert('Carrinho vazio.'); return; }
+      const itens = cart.map(i=> ({ produtoId: i.id, quantidade: i.qtd }));
+      const enderecoEntrega = localStorage.getItem('clienteLocal') || 'Endereço não informado';
+      const r = await fetch('http://localhost:4000/pedidos', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', ...auth },
+        body: JSON.stringify({ clienteId, padariaId: Number(padariaId), enderecoEntrega, itens })
+      });
+      if(r.ok){
+        alert('Pedido criado! Você será redirecionado para Meus Pedidos.');
+        localStorage.removeItem('cart');
+        location.href = './meus-pedidos.html';
+      }else{
+        const txt = await r.text();
+        alert('Falha ao criar pedido: ' + txt);
+      }
+    };
+    q.addEventListener('input', render);
+    load();
+  </script>
+</body>
+</html>
