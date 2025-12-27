@@ -7,12 +7,19 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  Patch,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PadariasService } from './padarias.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Funcoes, FuncaoGuard } from '../autenticacao/funcao.guard';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
 import { CriarPadariaDto } from './dto/criar-padaria.dto';
+import { AtualizarConfiguracoesDto } from './dto/atualizar-configuracoes.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 @Controller('padarias')
 export class PadariasController {
@@ -44,20 +51,47 @@ export class PadariasController {
     return this.padariasService.criar(dados, donoId);
   }
 
-  @Post('atualizar')
+  @Patch('configuracoes')
   @UseGuards(AuthGuard('jwt'), FuncaoGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
-  atualizar(
-    @Body()
-    dados: Partial<{
-      endereco: string;
-      ativo: boolean;
-      descricao: string;
-      nome: string;
-    }>,
+  atualizarConfiguracoes(
+    @Body() dados: AtualizarConfiguracoesDto,
     @Req() req: { user: { userId: number } },
   ) {
     const donoId = req.user.userId;
-    return this.padariasService.atualizarPorDono(donoId, dados as any);
+    return this.padariasService.atualizarConfiguracoes(donoId, dados);
+  }
+
+  @Post('logo')
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @Funcoes(FuncaoUsuario.DONO_PADARIA)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLogo(
+    @UploadedFile() file: unknown,
+    @Req() req: { user: { userId: number } },
+  ) {
+    const donoId = req.user.userId;
+    const f = file as {
+      buffer: Buffer;
+      mimetype?: string;
+      originalname?: string;
+    };
+    const root = 'uploads/logos';
+    if (!existsSync(root)) mkdirSync(root, { recursive: true });
+    const ext = (() => {
+      const map: Record<string, string> = {
+        'image/png': '.png',
+        'image/jpeg': '.jpg',
+        'image/jpg': '.jpg',
+        'image/webp': '.webp',
+      };
+      return map[f.mimetype ?? ''] ?? '.png';
+    })();
+    const name =
+      Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext;
+    const fullPath = join(root, name);
+    writeFileSync(fullPath, f.buffer);
+    const relativePath = join(root, name).replace(/\\/g, '/');
+    return this.padariasService.atualizarLogo(donoId, relativePath);
   }
 }

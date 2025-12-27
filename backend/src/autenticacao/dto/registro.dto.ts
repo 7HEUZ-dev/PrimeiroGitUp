@@ -27,6 +27,5 @@ export class RegistroDto {
   nomePadaria?: string;
 
   @IsEnum(FuncaoUsuario)
-  @IsOptional()
-  funcao?: FuncaoUsuario;
+  funcao: FuncaoUsuario;
 }

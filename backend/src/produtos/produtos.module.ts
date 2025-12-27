@@ -8,12 +8,14 @@ import { Produto } from './produto.entity';
 import { Padaria } from '../padarias/padaria.entity';
 import { AutenticacaoModule } from '../autenticacao/autenticacao.module';
 import { PadariasModule } from '../padarias/padarias.module'; // <--- NOVO IMPORT
+import { AssinaturasModule } from '../assinaturas/assinaturas.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Produto, Padaria]),
     AutenticacaoModule,
     PadariasModule, // <--- ADICIONE ESTA LINHA para resolver a injeção do PadariaRepository
+    AssinaturasModule,
   ],
   controllers: [ProdutosController],
   providers: [ProdutosService],

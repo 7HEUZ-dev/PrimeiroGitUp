@@ -25,6 +25,60 @@ export class Padaria {
   @Column({ type: 'text', nullable: true })
   descricao: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  logo_url: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  telefone: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  whatsapp: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  instagram_url: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  facebook_url: string;
+
+  @Column({ type: 'int', nullable: true })
+  raio_entrega_km: number;
+
+  @Column({
+    type: 'enum',
+    enum: ['FIXA', 'POR_DISTANCIA', 'POR_BAIRRO'],
+    default: 'FIXA',
+  })
+  taxa_entrega_tipo: 'FIXA' | 'POR_DISTANCIA' | 'POR_BAIRRO';
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  taxa_entrega_valor: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  taxa_por_km: number;
+
+  @Column({ type: 'json', nullable: true })
+  taxa_bairro_config: Record<string, number> | null;
+
+  @Column({ type: 'int', nullable: true })
+  tempo_medio_minutos: number;
+
+  @Column({ type: 'boolean', default: false })
+  retirada_no_local: boolean;
+
+  @Column({ type: 'json', nullable: true })
+  horarios_semana: Array<{
+    dia: string;
+    abre: string;
+    fecha: string;
+    aberto: boolean;
+  }> | null;
+
+  @Column({ type: 'json', nullable: true })
+  horarios_especiais: Array<{ data: string; aberto: boolean }> | null;
+
+  @Column({ type: 'simple-array', nullable: true })
+  formas_pagamento: Array<'CARTAO' | 'PIX' | 'DINHEIRO' | 'VALE_REFEICAO'>;
+
   @Column({ type: 'boolean', default: true })
   ativo: boolean;
 

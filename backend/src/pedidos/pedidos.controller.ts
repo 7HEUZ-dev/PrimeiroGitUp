@@ -14,13 +14,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { Funcoes, FuncaoGuard } from '../autenticacao/funcao.guard';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
 import { CriarPedidoDto } from './dto/criar-pedido.dto';
+import { AssinaturaAtivaGuard } from '../assinaturas/assinatura-ativa.guard';
 
 @Controller('pedidos')
 export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard, AssinaturaAtivaGuard)
   @Funcoes(FuncaoUsuario.CLIENTE)
   criarPedido(@Body() dados: CriarPedidoDto) {
     return this.pedidosService.criarPedido(dados);
@@ -39,7 +40,7 @@ export class PedidosController {
   }
 
   @Patch(':id/status')
-  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard, AssinaturaAtivaGuard)
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
   atualizarStatus(
     @Param('id', ParseIntPipe) id: number,

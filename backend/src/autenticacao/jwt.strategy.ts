@@ -11,6 +11,7 @@ export interface JwtPayload {
   email: string;
   sub: number; // ID do usuário
   funcao: FuncaoUsuario;
+  padariaId?: number | null;
 }
 
 @Injectable()
@@ -30,6 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userId: payload.sub,
       email: payload.email,
       funcao: payload.funcao,
+      padariaId: payload.padariaId ?? null,
     };
   }
 }

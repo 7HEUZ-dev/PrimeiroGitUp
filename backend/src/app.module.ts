@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { createConnection } from 'mysql2/promise';
 
 // --- IMPORTS DE ENTIDADES E MÓDULOS (PORTUGUÊS) ---
 import { Usuario } from './usuarios/usuario.entity';
@@ -14,6 +13,8 @@ import { Produto } from './produtos/produto.entity';
 import { Pedido } from './pedidos/pedido.entity'; // Entidade Pedido
 import { DetalhePedido } from './pedidos/detalhe-pedido.entity'; // Entidade DetalhePedido
 import { Gasto } from './financeiro/gasto.entity'; // Entidade Gasto
+import { Assinatura } from './assinaturas/assinatura.entity';
+import { Plano } from './assinaturas/plano.entity';
 
 import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
@@ -21,6 +22,8 @@ import { PadariasModule } from './padarias/padarias.module';
 import { ProdutosModule } from './produtos/produtos.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { FinanceiroModule } from './financeiro/financeiro.module';
+import { PixModule } from './pix/pix.module';
+import { AssinaturasModule } from './assinaturas/assinaturas.module';
 // --------------------------------------------------
 
 @Module({
@@ -34,38 +37,25 @@ import { FinanceiroModule } from './financeiro/financeiro.module';
     // Configuração da Conexão TypeORM
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const host = configService.get<string>('DB_HOST') ?? '127.0.0.1';
-        const portStr = configService.get<string>('DB_PORT') ?? '3306';
-        const port = Number.parseInt(portStr, 10);
-        const username = configService.get<string>('DB_USERNAME') ?? 'root';
-        const password = configService.get<string>('DB_PASSWORD') ?? '';
-        const database = configService.get<string>('DB_DATABASE') ?? 'padaria';
-
-        try {
-          const conn = await createConnection({
-            host,
-            port,
-            user: username,
-            password,
-          });
-          await conn.query('CREATE DATABASE IF NOT EXISTS ??', [database]);
-          await conn.end();
-        } catch {
-          void 0;
-        }
-
-        return {
-          type: 'mysql',
-          host,
-          port,
-          username,
-          password,
-          database,
-          entities: [Usuario, Padaria, Produto, Pedido, DetalhePedido, Gasto],
-          synchronize: true,
-        };
-      },
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST') ?? '127.0.0.1',
+        port: Number(configService.get<number>('DB_PORT') ?? 3306),
+        username: configService.get<string>('DB_USERNAME') ?? 'root',
+        password: configService.get<string>('DB_PASSWORD') ?? '',
+        database: configService.get<string>('DB_DATABASE') ?? 'padaria',
+        entities: [
+          Usuario,
+          Padaria,
+          Produto,
+          Pedido,
+          DetalhePedido,
+          Gasto,
+          Assinatura,
+          Plano,
+        ],
+        synchronize: true, // Cria e atualiza as tabelas automaticamente
+      }),
       inject: [ConfigService],
     }),
 
@@ -76,6 +66,8 @@ import { FinanceiroModule } from './financeiro/financeiro.module';
     ProdutosModule,
     PedidosModule,
     FinanceiroModule,
+    PixModule,
+    AssinaturasModule,
     // ----------------------------
   ],
   controllers: [AppController],
