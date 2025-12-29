@@ -1,5 +1,3 @@
-// backend/src/padarias/padaria.entity.ts
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -19,7 +17,7 @@ export class Padaria {
   @Column({ type: 'varchar' })
   nome: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   endereco: string;
 
   @Column({ type: 'text', nullable: true })
@@ -89,14 +87,12 @@ export class Padaria {
   entregasNoMes: number;
 
   @Column({ type: 'varchar', default: 'BASICO' })
-  plano: string; // BASICO, PRO, PREMIUM
+  plano: string;
 
-  // 1:1 - O Dono
   @OneToOne(() => Usuario)
-  @JoinColumn({ name: 'dono_id' }) // Coluna para armazenar o ID do dono
+  @JoinColumn({ name: 'dono_id' })
   dono: Usuario;
 
-  // 1:N - Os Produtos
   @OneToMany(() => Produto, (produto) => produto.padaria)
   produtos: Produto[];
 }

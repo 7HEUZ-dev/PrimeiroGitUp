@@ -1,18 +1,15 @@
-// backend/src/app.module.ts
-
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// --- IMPORTS DE ENTIDADES E MÓDULOS (PORTUGUÊS) ---
 import { Usuario } from './usuarios/usuario.entity';
 import { Padaria } from './padarias/padaria.entity';
 import { Produto } from './produtos/produto.entity';
-import { Pedido } from './pedidos/pedido.entity'; // Entidade Pedido
-import { DetalhePedido } from './pedidos/detalhe-pedido.entity'; // Entidade DetalhePedido
-import { Gasto } from './financeiro/gasto.entity'; // Entidade Gasto
+import { Pedido } from './pedidos/pedido.entity';
+import { DetalhePedido } from './pedidos/detalhe-pedido.entity';
+import { Gasto } from './financeiro/gasto.entity';
 import { Assinatura } from './assinaturas/assinatura.entity';
 import { Plano } from './assinaturas/plano.entity';
 
@@ -20,21 +17,14 @@ import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { PadariasModule } from './padarias/padarias.module';
 import { ProdutosModule } from './produtos/produtos.module';
-import { PedidosModule } from './pedidos/pedidos.module';
-import { FinanceiroModule } from './financeiro/financeiro.module';
-import { PixModule } from './pix/pix.module';
-import { AssinaturasModule } from './assinaturas/assinaturas.module';
-// --------------------------------------------------
 
 @Module({
   imports: [
-    // Configura o carregamento do arquivo banco.env
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'banco.env', // Seu arquivo de credenciais
+      envFilePath: 'banco.env',
     }),
 
-    // Configuração da Conexão TypeORM
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -43,32 +33,17 @@ import { AssinaturasModule } from './assinaturas/assinaturas.module';
         port: Number(configService.get<number>('DB_PORT') ?? 3306),
         username: configService.get<string>('DB_USERNAME') ?? 'root',
         password: configService.get<string>('DB_PASSWORD') ?? '',
-        database: configService.get<string>('DB_DATABASE') ?? 'padaria',
-        entities: [
-          Usuario,
-          Padaria,
-          Produto,
-          Pedido,
-          DetalhePedido,
-          Gasto,
-          Assinatura,
-          Plano,
-        ],
-        synchronize: true, // Cria e atualiza as tabelas automaticamente
+        database: configService.get<string>('DB_DATABASE') ?? 'saas_padaria',
+        entities: [Usuario, Padaria, Produto, Pedido, DetalhePedido, Gasto, Assinatura, Plano],
+        synchronize: true, // Cria colunas e tabelas automaticamente no MySQL
       }),
       inject: [ConfigService],
     }),
 
-    // --- MÓDULOS DA APLICAÇÃO ---
     AutenticacaoModule,
     UsuariosModule,
     PadariasModule,
     ProdutosModule,
-    PedidosModule,
-    FinanceiroModule,
-    PixModule,
-    AssinaturasModule,
-    // ----------------------------
   ],
   controllers: [AppController],
   providers: [AppService],

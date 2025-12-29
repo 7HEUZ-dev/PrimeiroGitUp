@@ -1,12 +1,4 @@
-import {
-  IsBoolean,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsOptional, IsPositive, IsString, MinLength } from 'class-validator';
 
 export class CriarProdutoDto {
   @IsString()
@@ -26,5 +18,6 @@ export class CriarProdutoDto {
   estoque: number;
 
   @IsBoolean()
-  disponivel: boolean;
+  @IsOptional()
+  disponivel: boolean = true;
 }

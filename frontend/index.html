@@ -133,5 +133,14 @@
     </div>
     <div class="container footer-copy">© 2024 PãoQuentinho. Todos os direitos reservados.</div>
   </footer>
+
+  <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const padariaId = usuario?.padariaId;
+    if (padariaId) {
+      const pedirAgoraLink = document.querySelector('.hero-actions a[href="./cliente.html"]');
+      pedirAgoraLink.href = `./cardapio.html?padaria=${padariaId}`;
+    }
+  </script>
 </body>
 </html>

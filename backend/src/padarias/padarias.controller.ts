@@ -30,14 +30,16 @@ export class PadariasController {
     return this.padariasService.listarTodas();
   }
 
+  // Rota para o Dono buscar os dados da própria padaria no Config.html
+  @Get('minha-padaria')
+  @UseGuards(AuthGuard('jwt'))
+  buscarMinhaPadaria(@Req() req: any) {
+    return this.padariasService.buscarPorDono(req.user.userId);
+  }
+
   @Get(':id')
   buscarPorId(@Param('id', ParseIntPipe) id: number) {
     return this.padariasService.buscarPorId(id);
-  }
-
-  @Get('dono/:donoId')
-  buscarPorDono(@Param('donoId', ParseIntPipe) donoId: number) {
-    return this.padariasService.buscarPorDono(donoId);
   }
 
   @Post()
@@ -67,17 +69,15 @@ export class PadariasController {
   @Funcoes(FuncaoUsuario.DONO_PADARIA)
   @UseInterceptors(FileInterceptor('file'))
   async uploadLogo(
-    @UploadedFile() file: unknown,
+    @UploadedFile() file: any,
     @Req() req: { user: { userId: number } },
   ) {
     const donoId = req.user.userId;
-    const f = file as {
-      buffer: Buffer;
-      mimetype?: string;
-      originalname?: string;
-    };
+    if (!file) return { message: 'Nenhum arquivo enviado' };
+
     const root = 'uploads/logos';
     if (!existsSync(root)) mkdirSync(root, { recursive: true });
+
     const ext = (() => {
       const map: Record<string, string> = {
         'image/png': '.png',
@@ -85,13 +85,15 @@ export class PadariasController {
         'image/jpg': '.jpg',
         'image/webp': '.webp',
       };
-      return map[f.mimetype ?? ''] ?? '.png';
+      return map[file.mimetype ?? ''] ?? '.png';
     })();
-    const name =
-      Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext;
+
+    const name = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext;
     const fullPath = join(root, name);
-    writeFileSync(fullPath, f.buffer);
-    const relativePath = join(root, name).replace(/\\/g, '/');
+    
+    writeFileSync(fullPath, file.buffer);
+    
+    const relativePath = `logos/${name}`; // Caminho amigável para o front
     return this.padariasService.atualizarLogo(donoId, relativePath);
   }
 }

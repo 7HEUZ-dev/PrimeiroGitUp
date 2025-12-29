@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -18,26 +14,21 @@ export class AutenticacaoService {
     @InjectRepository(Usuario)
     private usuariosRepository: Repository<Usuario>,
     @InjectRepository(Padaria)
-    private padariaRepository: Repository<Padaria>, // Injetar PadariaRepo
+    private padariaRepository: Repository<Padaria>,
     private jwtService: JwtService,
   ) {}
 
-  // ------------------------------------
-  // Lógica de Registro (Clientes e Donos)
-  // ------------------------------------
   async registrar(dados: RegistroDto, funcao: FuncaoUsuario): Promise<Usuario> {
     const { nome, email, senha, endereco, nomePadaria } = dados;
 
-    // 1. Verifica se o usuário já existe
     const usuarioExistente = await this.usuariosRepository.findOneBy({ email });
     if (usuarioExistente) {
       throw new BadRequestException('Email já está em uso.');
     }
 
-    // 2. Criptografa a senha (SALT de 10)
     const hashSenha = await bcrypt.hash(senha, 10);
 
-    // 3. Cria e Salva o novo usuário
+    // 1. Criar o Usuário
     const novoUsuario = this.usuariosRepository.create({
       nome,
       email,
@@ -45,56 +36,39 @@ export class AutenticacaoService {
       endereco,
       funcao,
     });
-
+    
     const usuarioSalvo = await this.usuariosRepository.save(novoUsuario);
 
-    // 4. Se for DONO, criar a Padaria Automaticamente
+    // 2. Se for DONO, criar a Padaria vinculada
     if (funcao === FuncaoUsuario.DONO_PADARIA) {
       if (!nomePadaria) {
-        throw new BadRequestException(
-          'Nome da padaria é obrigatório para cadastro de dono.',
-        );
+        // Se falhar o nome da padaria, removemos o usuário para não poluir o banco
+        await this.usuariosRepository.remove(usuarioSalvo);
+        throw new BadRequestException('Nome da padaria é obrigatório para donos.');
       }
+
       const novaPadaria = this.padariaRepository.create({
         nome: nomePadaria,
-        endereco: endereco, // Usa o mesmo endereço do dono por enquanto
+        endereco: endereco || 'Endereço não informado',
         dono: usuarioSalvo,
+        ativo: true,
+        plano: 'BASICO'
       });
+
       await this.padariaRepository.save(novaPadaria);
     }
 
     return usuarioSalvo;
   }
 
-  // ------------------------------------
-  // Lógica de Login
-  // ------------------------------------
-  async validarUsuario(
-    email: string,
-    senha: string,
-  ): Promise<{
-    id: number;
-    nome: string;
-    email: string;
-    funcao: FuncaoUsuario;
-  } | null> {
+  async login(dados: LoginDto) {
     const usuario = await this.usuariosRepository
       .createQueryBuilder('usuario')
       .addSelect('usuario.senha')
-      .where('usuario.email = :email', { email })
+      .where('usuario.email = :email', { email: dados.email })
       .getOne();
 
-    if (usuario && (await bcrypt.compare(senha, usuario.senha))) {
-      const { id, nome, email: em, funcao } = usuario;
-      return { id, nome, email: em, funcao };
-    }
-    return null;
-  }
-
-  async login(dados: LoginDto) {
-    const usuario = await this.validarUsuario(dados.email, dados.senha);
-
-    if (!usuario) {
+    if (!usuario || !(await bcrypt.compare(dados.senha, usuario.senha))) {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
@@ -103,20 +77,16 @@ export class AutenticacaoService {
       const padaria = await this.padariaRepository.findOne({
         where: { dono: { id: usuario.id } },
       });
-      if (padaria) {
-        padariaId = padaria.id;
-      }
+      padariaId = padaria ? padaria.id : null;
     }
 
-    // Cria o JWT Payload
-    const payload = {
-      email: usuario.email,
-      sub: usuario.id,
-      funcao: usuario.funcao,
-      padariaId, // Inclui ID da padaria no token se houver
+    const payload = { 
+      email: usuario.email, 
+      sub: usuario.id, 
+      funcao: usuario.funcao, 
+      padariaId 
     };
 
-    // Retorna o token de acesso e o perfil do usuário
     return {
       access_token: this.jwtService.sign(payload),
       usuario: {

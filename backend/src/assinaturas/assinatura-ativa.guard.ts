@@ -23,6 +23,10 @@ export class AssinaturaAtivaGuard implements CanActivate {
     const alvoPadariaId = bodyPadariaId ?? tokenPadariaId;
     if (!alvoPadariaId) return true;
 
+    console.log('Padaria ID do Token:', tokenPadariaId);
+    console.log('Padaria ID do Corpo:', bodyPadariaId);
+    console.log('Padaria ID Alvo:', alvoPadariaId);
+
     const assinatura =
       await this.assinaturasService.verificarVencimento(alvoPadariaId);
     if (!assinatura || assinatura.status !== StatusAssinatura.ATIVA) {

@@ -1,11 +1,5 @@
+import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
 import { FuncaoUsuario } from '../../usuarios/usuario.entity';
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
 
 export class RegistroDto {
   @IsString()
@@ -24,8 +18,9 @@ export class RegistroDto {
 
   @IsString()
   @IsOptional()
-  nomePadaria?: string;
+  nomePadaria?: string; // Campo que vem do seu HTML
 
   @IsEnum(FuncaoUsuario)
-  funcao: FuncaoUsuario;
+  @IsOptional()
+  funcao?: FuncaoUsuario;
 }

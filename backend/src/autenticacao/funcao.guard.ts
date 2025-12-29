@@ -1,15 +1,10 @@
-// backend/src/autenticacao/funcao.guard.ts
-
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
-import { SetMetadata } from '@nestjs/common';
-import { JwtPayload } from './jwt.strategy';
 
-// Decorator que será usado nas rotas para definir as permissões
 export const FUNCOES_KEY = 'funcoes';
-export const Funcoes = (...funcoes: FuncaoUsuario[]) =>
-  SetMetadata(FUNCOES_KEY, funcoes); // Este import deve ser SetMetadata do '@nestjs/common'
+// Importante: O nome aqui deve ser 'Funcoes' exatamente como os controllers importam
+export const Funcoes = (...funcoes: FuncaoUsuario[]) => SetMetadata(FUNCOES_KEY, funcoes);
 
 @Injectable()
 export class FuncaoGuard implements CanActivate {
@@ -21,14 +16,12 @@ export class FuncaoGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    if (!funcoesRequeridas) {
-      return true; // Se nenhuma função for definida, permite acesso
-    }
+    if (!funcoesRequeridas) return true;
 
-    const req = context
-      .switchToHttp()
-      .getRequest<{ user: JwtPayload & { sub: number } }>();
-    const user = req.user;
-    return funcoesRequeridas.some((funcao) => user.funcao === funcao);
+    const { user } = context.switchToHttp().getRequest();
+    console.log('Funções Requeridas:', funcoesRequeridas);
+    console.log('Função do Usuário:', user?.funcao);
+    // Verifica se o id e a funcao existem no objeto user que o JWT Strategy injetou
+    return user && user.funcao && funcoesRequeridas.includes(user.funcao);
   }
 }

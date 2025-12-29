@@ -9,18 +9,29 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <style>
+    /* SEU MOLDE DE LAYOUT */
     .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;background:#fffdf9}
-    .sidebar{border-right:1px solid #e5e7eb;background:#fff;padding:16px}
+    .sidebar{border-right:1px solid #e5e7eb;background:#fff;padding:16px;position:sticky;top:0;height:100vh}
     .side-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
     .menu{display:flex;flex-direction:column;gap:6px}
     .menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#374151;text-decoration:none}
-    .menu a.active{background:#fff1e6;color:#111827}
+    .menu a.active{background:#fff1e6;color:#ea580c;font-weight:600}
     .menu a .icon{width:28px;height:28px;border-radius:8px;background:#fff1e6;display:grid;place-items:center;color:#ea580c}
-    .view{padding:18px}
-    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px}
-    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-    .field input{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px}
-    .switch{display:inline-flex;align-items:center;gap:8px}
+    .view{padding:24px}
+    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px;box-shadow:0 6px 20px rgba(0,0,0,.05);max-width:800px}
+    
+    /* ESTILO DOS CAMPOS DO FORMULÁRIO */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .full { grid-column: span 2; }
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+    .field label{font-size:14px;font-weight:600;color:#4b5563}
+    .field input, .field select, .field textarea{height:44px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px;font-family:inherit}
+    .field textarea{height:80px;padding:12px}
+    
+    .section-title-form { font-family:'DM Serif Display',serif; font-size:22px; margin:20px 0 10px; color:#111827; border-bottom:1px solid #f3f4f6; padding-bottom:8px}
+    .btn-primary { background:#ea580c; color:#fff; border:none; padding:14px; border-radius:12px; font-weight:600; cursor:pointer; width:100%; transition:0.2s }
+    .btn-primary:hover { background:#d44d0b }
+    .switch{display:inline-flex;align-items:center;gap:12px;background:#fff8f1;padding:12px;border-radius:12px;width:100%;box-sizing:border-box}
   </style>
 </head>
 <body>
@@ -28,82 +39,148 @@
     <aside class="sidebar">
       <div class="side-brand">
         <div class="brand-icon">🍞</div>
-        <div class="brand-name">PãoQuentinho</div>
+        <div class="brand-name" style="font-weight:700;font-size:18px">PãoQuentinho</div>
       </div>
       <div class="menu">
         <a href="./dono.html"><span class="icon">🏠</span>Dashboard</a>
         <a href="./pedidos.html"><span class="icon">🧾</span>Pedidos</a>
         <a href="./produtos.html"><span class="icon">📦</span>Produtos</a>
         <a href="./clientes.html"><span class="icon">👥</span>Clientes</a>
-        <a href="./entregas.html"><span class="icon">🚚</span>Entregas</a>
-        <a href="./promocoes.html"><span class="icon">🏷️</span>Promoções</a>
-        <a href="./relatorios.html"><span class="icon">📊</span>Relatórios</a>
-        <a href="./avaliacoes.html"><span class="icon">💬</span>Avaliações</a>
         <a href="./config.html" class="active"><span class="icon">⚙️</span>Configurações</a>
-        <a href="./index.html" class="btn btn-white" style="margin-top:8px">Ver loja</a>
+        <a href="./index.html" style="margin-top:20px;border:1px solid #e5e7eb">Ver loja</a>
       </div>
     </aside>
+
     <main class="view">
       <div class="topbar">
         <div>
-          <div class="section-sub" id="padariaNome">Padaria</div>
-          <div class="section-title" style="text-align:left">Configurações da Loja</div>
+          <div style="color:#6b7280;font-size:14px">Gerenciamento</div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:32px;margin:0">Configurações da Loja</h2>
         </div>
-        <div class="brand-icon">JP</div>
       </div>
-      <div class="panel">
+
+      <div class="panel" style="margin-top:20px">
         <form id="formConfig">
-          <div class="field"><label>Nome</label><input id="cfgNome"></div>
-          <div class="field"><label>Endereço</label><input id="cfgEndereco"></div>
-          <div class="field"><label>Descrição</label><input id="cfgDescricao"></div>
-          <div class="field switch"><label>Loja aberta</label><input id="cfgAtivo" type="checkbox"></div>
-          <div><button class="btn btn-primary" type="submit">Salvar alterações</button></div>
+          <div class="section-title-form">Dados Básicos</div>
+          <div class="field-grid">
+            <div class="field full">
+              <label>Nome da Padaria</label>
+              <input type="text" id="nome" required>
+            </div>
+            <div class="field">
+              <label>WhatsApp (com DDD)</label>
+              <input type="text" id="whatsapp" placeholder="Ex: 11999999999">
+            </div>
+            <div class="field">
+              <label>Telefone Fixo</label>
+              <input type="text" id="telefone">
+            </div>
+            <div class="field full">
+              <label>Descrição curta</label>
+              <textarea id="descricao" placeholder="Uma breve descrição da sua padaria..."></textarea>
+            </div>
+          </div>
+
+          <div class="section-title-form">Endereço e Entrega</div>
+          <div class="field-grid">
+            <div class="field full">
+              <label>Endereço Completo</label>
+              <input type="text" id="endereco">
+            </div>
+            <div class="field">
+              <label>Taxa de Entrega (R$)</label>
+              <input type="number" id="taxa_entrega_valor" step="0.01">
+            </div>
+            <div class="field">
+              <label>Tempo Médio (minutos)</label>
+              <input type="number" id="tempo_medio_minutos">
+            </div>
+          </div>
+
+          <div class="section-title-form">Funcionamento</div>
+          <div class="field-grid">
+            <div class="field">
+              <div class="switch">
+                <input type="checkbox" id="ativo">
+                <label for="ativo">Loja Online (Aberta)</label>
+              </div>
+            </div>
+            <div class="field">
+              <div class="switch">
+                <input type="checkbox" id="retirada_no_local">
+                <label for="retirada_no_local">Permitir Retirada</label>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="margin-top:20px">Salvar Alterações</button>
         </form>
       </div>
     </main>
   </div>
+
   <script>
     const token = localStorage.getItem('token');
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const donoId = usuario?.id;
-    let padariaId = usuario?.padariaId;
-    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
-    async function getPadaria() {
-      if (padariaId) return padariaId;
-      if (!donoId) return null;
-      const r = await fetch('http://localhost:4000/padarias/dono/' + donoId);
-      const p = await r.json();
-      padariaId = p?.id;
-      return padariaId;
+    const API_URL = 'http://localhost:4000/padarias';
+
+    async function carregarDados() {
+      try {
+        const res = await fetch(`${API_URL}/minha-padaria`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const p = await res.json();
+        
+        // Mapeando dados para o formulário
+        document.getElementById('nome').value = p.nome || '';
+        document.getElementById('whatsapp').value = p.whatsapp || '';
+        document.getElementById('telefone').value = p.telefone || '';
+        document.getElementById('descricao').value = p.descricao || '';
+        document.getElementById('endereco').value = p.endereco || '';
+        document.getElementById('taxa_entrega_valor').value = p.taxa_entrega_valor || 0;
+        document.getElementById('tempo_medio_minutos').value = p.tempo_medio_minutos || 0;
+        document.getElementById('ativo').checked = p.ativo;
+        document.getElementById('retirada_no_local').checked = p.retirada_no_local;
+      } catch (err) {
+        console.error("Erro ao carregar configurações:", err);
+      }
     }
-    async function carregar(){
-      const pid = await getPadaria();
-      if(!pid) return;
-      const padariaResp = await fetch('http://localhost:4000/padarias/' + pid);
-      const padaria = await padariaResp.json();
-      document.getElementById('padariaNome').textContent = padaria?.nome || 'Padaria';
-      document.getElementById('cfgNome').value = padaria?.nome ?? '';
-      document.getElementById('cfgEndereco').value = padaria?.endereco ?? '';
-      document.getElementById('cfgDescricao').value = padaria?.descricao ?? '';
-      document.getElementById('cfgAtivo').checked = !!padaria?.ativo;
-    }
-    document.getElementById('formConfig').onsubmit = async (e)=>{
+
+    document.getElementById('formConfig').onsubmit = async (e) => {
       e.preventDefault();
-      const body = {
-        nome: document.getElementById('cfgNome').value || undefined,
-        endereco: document.getElementById('cfgEndereco').value || undefined,
-        descricao: document.getElementById('cfgDescricao').value || undefined,
-        ativo: document.getElementById('cfgAtivo').checked
+      
+      const payload = {
+        nome: document.getElementById('nome').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        telefone: document.getElementById('telefone').value,
+        descricao: document.getElementById('descricao').value,
+        endereco: document.getElementById('endereco').value,
+        taxa_entrega_valor: parseFloat(document.getElementById('taxa_entrega_valor').value),
+        tempo_medio_minutos: parseInt(document.getElementById('tempo_medio_minutos').value),
+        ativo: document.getElementById('ativo').checked,
+        retirada_no_local: document.getElementById('retirada_no_local').checked
       };
-      const res = await fetch('http://localhost:4000/padarias/atualizar', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', ...auth },
-        body: JSON.stringify(body)
-      });
-      if(res.ok){ alert('Configurações atualizadas'); carregar(); }
-      else{ alert('Falha ao atualizar'); }
+
+      try {
+        const res = await fetch(`${API_URL}/configuracoes`, {
+          method: 'PATCH',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          alert('Configurações atualizadas com sucesso!');
+        } else {
+          alert('Erro ao salvar alterações.');
+        }
+      } catch (err) {
+        alert('Erro de conexão com o servidor.');
+      }
     };
-    carregar();
+
+    carregarDados();
   </script>
 </body>
 </html>

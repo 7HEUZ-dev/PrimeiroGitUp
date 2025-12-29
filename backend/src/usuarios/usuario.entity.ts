@@ -1,11 +1,9 @@
-// backend/src/usuarios/usuario.entity.ts
-
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 export enum FuncaoUsuario {
-  CLIENTE = 'cliente',
-  DONO_PADARIA = 'dono_padaria',
-  ADMIN = 'admin',
+  CLIENTE = 'CLIENTE',
+  DONO_PADARIA = 'DONO_PADARIA',
+  ADMIN = 'ADMIN',
 }
 
 @Entity('usuarios')

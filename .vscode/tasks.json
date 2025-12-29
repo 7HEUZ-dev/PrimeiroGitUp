@@ -1,0 +1,150 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "curl",
+			"args": [
+				"-X",
+				"POST",
+				"http://localhost:3000/produtos",
+				"-H",
+				"Content-Type: application/json",
+				"-H",
+				"Authorization: Bearer <TOKEN>",
+				"-d",
+				"{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:3000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:3000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:4000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:4000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:4000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:4000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Testar Cadastro de Produto",
+			"type": "shell",
+			"command": "Invoke-RestMethod",
+			"args": [
+				"-Uri",
+				"http://localhost:4000/produtos",
+				"-Method",
+				"POST",
+				"-Headers",
+				"@{Authorization='Bearer <TOKEN>'; 'Content-Type'='application/json'}",
+				"-Body",
+				"'{\"nome\":\"Pão Francês\",\"preco\":5.50,\"estoque\":100,\"categoria\":\"Pães\"}'"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

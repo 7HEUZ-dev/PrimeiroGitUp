@@ -6,166 +6,187 @@
   <title>Produtos • PãoQuentinho</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <style>
-    .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;background:#fffdf9}
-    .sidebar{border-right:1px solid #e5e7eb;background:#fff;padding:16px}
-    .side-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-    .menu{display:flex;flex-direction:column;gap:6px}
-    .menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#374151;text-decoration:none}
-    .menu a.active{background:#fff1e6;color:#111827}
-    .menu a .icon{width:28px;height:28px;border-radius:8px;background:#fff1e6;display:grid;place-items:center;color:#ea580c}
-    .view{padding:18px}
-    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px}
-    .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px dashed #eee;padding:10px;text-align:left}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.2);display:none;align-items:center;justify-content:center}
-    .modal .content{background:#fff;border-radius:16px;padding:16px;max-width:520px;width:100%;border:1px solid #e5e7eb}
-    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-    .field input{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px}
+    :root { --primary: #ea580c; --bg: #fffdf9; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; }
+    .shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { background: #fff; border-right: 1px solid #e5e7eb; padding: 24px; position: sticky; top: 0; height: 100vh; }
+    .menu { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+    .menu a { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: #4b5563; text-decoration: none; transition: 0.2s; }
+    .menu a:hover { background: #fef2f2; color: var(--primary); }
+    .menu a.active { background: #fff1e6; color: var(--primary); font-weight: 600; }
+    
+    /* Content */
+    .main-content { padding: 40px; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    
+    /* Tabela */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: #6b7280; font-size: 0.875rem; }
+    td { padding: 15px 12px; border-bottom: 1px solid #f9f9f9; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+    .bg-success { background: #dcfce7; color: #166534; }
+    .bg-error { background: #fee2e2; color: #991b1b; }
+
+    /* Modal */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 999; }
+    .modal-content { background: #fff; padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    label { display: block; font-weight: 600; margin-bottom: 4px; color: #374151; }
+    input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #d1d5db; border-radius: 10px; box-sizing: border-box; outline: none; transition: 0.2s; }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1); }
   </style>
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <div class="side-brand">
-        <div class="brand-icon">🍞</div>
-        <div class="brand-name">PãoQuentinho</div>
-      </div>
-      <div class="menu">
-        <a href="./dono.html"><span class="icon">🏠</span>Dashboard</a>
-        <a href="./pedidos.html"><span class="icon">🧾</span>Pedidos</a>
-        <a href="./produtos.html" class="active"><span class="icon">📦</span>Produtos</a>
-        <a href="./clientes.html"><span class="icon">👥</span>Clientes</a>
-        <a href="./entregas.html"><span class="icon">🚚</span>Entregas</a>
-        <a href="./promocoes.html"><span class="icon">🏷️</span>Promoções</a>
-        <a href="./relatorios.html"><span class="icon">📊</span>Relatórios</a>
-        <a href="./avaliacoes.html"><span class="icon">💬</span>Avaliações</a>
-        <a href="./config.html"><span class="icon">⚙️</span>Configurações</a>
-        <a href="./index.html" class="btn btn-white" style="margin-top:8px">Ver loja</a>
-      </div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary)">🍞 PãoQuentinho</div>
+      <nav class="menu">
+        <a href="./dono.html">🏠 Dashboard</a>
+        <a href="./pedidos.html">🧾 Pedidos</a>
+        <a href="./produtos.html" class="active">📦 Produtos</a>
+        <a href="./clientes.html">👥 Clientes</a>
+        <a href="./config.html">⚙️ Configurações</a>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <a href="#" onclick="sair()" style="color: #dc2626;">🚪 Sair</a>
+      </nav>
     </aside>
-    <main class="view">
-      <div class="topbar">
+
+    <main class="main-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
-          <div class="section-sub" id="padariaNome">Padaria</div>
-          <div class="section-title" style="text-align:left">Produtos</div>
+          <h1 style="margin:0">Meus Produtos</h1>
+          <p style="color: #6b7280; margin: 4px 0 0">Gerencie o cardápio da sua padaria</p>
         </div>
-        <div class="brand-icon">JP</div>
+        <button class="btn btn-primary" onclick="abrirModal()">+ Adicionar Produto</button>
       </div>
-      <div class="panel">
-        <table class="table">
+
+      <div class="card">
+        <table>
           <thead>
             <tr>
-              <th>Produto</th><th>Preço</th><th>Estoque</th><th>Categoria</th><th>Disponível</th><th>Ações</th>
+              <th>Produto</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>Status</th>
             </tr>
           </thead>
-          <tbody id="tabelaProdutos"></tbody>
+          <tbody id="tabela-corpo">
+            <tr><td colspan="4" style="text-align:center">Carregando produtos...</td></tr>
+          </tbody>
         </table>
-        <div style="margin-top:12px">
-          <button class="btn btn-primary" id="abrirModalProduto">Adicionar produto</button>
-        </div>
       </div>
     </main>
   </div>
-  <div id="modalProduto" class="modal">
-    <div class="content">
-      <h3>Novo produto</h3>
-      <form id="formProduto">
-        <div class="field"><label>Nome</label><input id="pNome" required></div>
-        <div class="field"><label>Preço</label><input id="pPreco" type="number" step="0.01" required></div>
-        <div class="field"><label>Estoque</label><input id="pEstoque" type="number" required></div>
-        <div class="field"><label>Categoria</label><input id="pCategoria"></div>
-        <div class="field"><label>Descrição</label><input id="pDescricao"></div>
-        <div class="actions"><button class="btn btn-primary" type="submit">Salvar</button><button class="btn btn-white" type="button" id="fecharModalProduto">Cancelar</button></div>
+
+  <div id="modalProd" class="modal">
+    <div class="modal-content">
+      <h2 style="margin-top: 0; font-family: 'Inter', sans-serif;">Novo Produto</h2>
+      <form id="formCadastro">
+        <label for="nome">Nome do item</label>
+        <input type="text" id="nome" required placeholder="Ex: Pão de Queijo">
+        
+        <label for="preco">Preço de venda (R$)</label>
+        <input type="number" id="preco" step="0.01" required placeholder="0.00">
+        
+        <label for="estoque">Quantidade em estoque</label>
+        <input type="number" id="estoque" required placeholder="0">
+        
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 2">Salvar Produto</button>
+          <button type="button" class="btn btn-white" onclick="fecharModal()" style="flex: 1">Cancelar</button>
+        </div>
       </form>
     </div>
   </div>
+
   <script>
     const token = localStorage.getItem('token');
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const donoId = usuario?.id;
-    let padariaId = usuario?.padariaId;
-    const auth = token ? { 'Authorization': 'Bearer ' + token } : {};
-    async function getPadaria() {
-      if (padariaId) return padariaId;
-      if (!donoId) return null;
-      const r = await fetch('http://localhost:4000/padarias/dono/' + donoId);
-      const p = await r.json();
-      padariaId = p?.id;
-      return padariaId;
+    const API_URL = 'http://localhost:4000';
+
+    // Se não tiver token, volta pro login
+    if (!token) window.location.href = './login.html';
+
+    async function carregarProdutos() {
+      try {
+        const res = await fetch(`${API_URL}/produtos`, {
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (res.status === 401) return sair();
+        
+        const produtos = await res.json();
+        const corpo = document.getElementById('tabela-corpo');
+        
+        if (produtos.length === 0) {
+          corpo.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#9ca3af">Nenhum produto cadastrado ainda.</td></tr>';
+          return;
+        }
+
+        corpo.innerHTML = produtos.map(p => `
+          <tr>
+            <td style="font-weight: 500; color: #111827;">${p.nome}</td>
+            <td>R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</td>
+            <td>${p.estoque} un</td>
+            <td>
+              <span class="badge ${p.disponivel ? 'bg-success' : 'bg-error'}">
+                ${p.disponivel ? '✅ Ativo' : '❌ Pausado'}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error("Erro ao carregar:", e);
+        document.getElementById('tabela-corpo').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red">Erro ao conectar com o servidor.</td></tr>';
+      }
     }
-    function formatBRL(n){ return 'R$ ' + (Number(n||0)).toFixed(2).replace('.', ','); }
-    async function carregar(){
-      const pid = await getPadaria();
-      if(!pid) return;
-      const padariaResp = await fetch('http://localhost:4000/padarias/' + pid);
-      const padaria = await padariaResp.json();
-      document.getElementById('padariaNome').textContent = padaria?.nome || 'Padaria';
-      const produtosResp = await fetch('http://localhost:4000/produtos/padaria/' + pid);
-      const produtos = await produtosResp.json();
-      const tbody = document.getElementById('tabelaProdutos');
-      tbody.innerHTML = produtos.map(p => `
-        <tr>
-          <td>${p.nome}</td>
-          <td>${formatBRL(p.preco)}</td>
-          <td>${p.estoque ?? 0}</td>
-          <td>${p.categoria ?? '-'}</td>
-          <td>${p.disponivel ? 'Sim' : 'Não'}</td>
-          <td>
-            <button class="btn btn-white" onclick="toggleDisponivel(${p.id}, ${p.disponivel ? 'false':'true'})">${p.disponivel?'Pausar':'Retomar'}</button>
-            <button class="btn btn-white" onclick="editarProduto(${p.id})">Editar</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-    async function toggleDisponivel(id, novo){
-      await fetch('http://localhost:4000/produtos/disponivel/' + id, {
-        method:'PATCH',
-        headers:{ 'Content-Type':'application/json', ...auth },
-        body: JSON.stringify({ disponivel: novo })
-      });
-      carregar();
-    }
-    async function editarProduto(id){
-      const preco = prompt('Novo preço (usar ponto):');
-      const estoque = prompt('Novo estoque (número inteiro):');
-      const categoria = prompt('Categoria (ex: Pães, Doces, Bebidas):');
-      const body = {};
-      if(preco) body.preco = Number(preco);
-      if(estoque) body.estoque = Number(estoque);
-      if(categoria) body.categoria = categoria;
-      if(Object.keys(body).length===0){ return; }
-      await fetch('http://localhost:4000/produtos/' + id, {
-        method:'PATCH',
-        headers:{ 'Content-Type':'application/json', ...auth },
-        body: JSON.stringify(body)
-      });
-      carregar();
-    }
-    const modal = document.getElementById('modalProduto');
-    document.getElementById('abrirModalProduto').onclick = ()=> modal.style.display='flex';
-    document.getElementById('fecharModalProduto').onclick = ()=> modal.style.display='none';
-    document.getElementById('formProduto').onsubmit = async (e)=>{
+
+    document.getElementById('formCadastro').onsubmit = async (e) => {
       e.preventDefault();
-      const body = {
-        nome: document.getElementById('pNome').value,
-        preco: Number(document.getElementById('pPreco').value),
-        estoque: Number(document.getElementById('pEstoque').value),
-        descricao: document.getElementById('pDescricao').value || undefined,
-        categoria: document.getElementById('pCategoria').value || undefined
+      
+      const payload = {
+        nome: document.getElementById('nome').value,
+        preco: parseFloat(document.getElementById('preco').value),
+        estoque: parseInt(document.getElementById('estoque').value),
+        disponivel: true
       };
-      const res = await fetch('http://localhost:4000/produtos', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', ...auth },
-        body: JSON.stringify(body)
-      });
-      if(res.ok){ alert('Produto criado'); modal.style.display='none'; carregar(); }
-      else{ alert('Falha ao criar produto'); }
+
+      try {
+        const res = await fetch(`${API_URL}/produtos`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          fecharModal();
+          document.getElementById('formCadastro').reset();
+          await carregarProdutos(); // Recarrega a lista automaticamente
+        } else {
+          const erro = await res.json();
+          alert('Erro: ' + (erro.message || 'Não foi possível salvar o produto.'));
+        }
+      } catch (err) {
+        alert('Erro de conexão com o servidor.');
+      }
     };
-    carregar();
-    setInterval(carregar, 10000);
+
+    function abrirModal() { document.getElementById('modalProd').style.display = 'flex'; }
+    function fecharModal() { document.getElementById('modalProd').style.display = 'none'; }
+    function sair() { localStorage.clear(); window.location.href = './login.html'; }
+
+    // Inicia a listagem ao abrir a página
+    carregarProdutos();
   </script>
 </body>
 </html>

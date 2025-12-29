@@ -1,37 +1,27 @@
-// backend/src/autenticacao/jwt.strategy.ts
-
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
 
-// Define a estrutura que o JWT Payload terá
-export interface JwtPayload {
-  email: string;
-  sub: number; // ID do usuário
-  funcao: FuncaoUsuario;
-  padariaId?: number | null;
-}
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     super({
-      // Extrai o JWT do cabeçalho 'Authorization: Bearer <token>'
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
     });
   }
 
-  // O método validate é chamado após a validação do token
-  validate(payload: JwtPayload): any {
+  async validate(payload: any) {
+    console.log('Payload JWT:', payload);
+    // O retorno deste objeto é o que o NestJS coloca dentro de 'req.user'
     return {
-      userId: payload.sub,
+      id: payload.sub,
       email: payload.email,
       funcao: payload.funcao,
-      padariaId: payload.padariaId ?? null,
+      padariaId: payload.padariaId,
     };
   }
 }

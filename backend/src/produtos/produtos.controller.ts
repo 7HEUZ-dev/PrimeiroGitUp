@@ -1,58 +1,36 @@
-// backend/src/produtos/produtos.controller.ts
-
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Get,
-  Req,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Req, Param } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
 import { CriarProdutoDto } from './dto/criar-produto.dto';
 import { FuncaoUsuario } from '../usuarios/usuario.entity';
-
-// Imports de Segurança
 import { AuthGuard } from '@nestjs/passport';
 import { Funcoes, FuncaoGuard } from '../autenticacao/funcao.guard';
-import { AssinaturaAtivaGuard } from '../assinaturas/assinatura-ativa.guard';
 
 @Controller('produtos')
 export class ProdutosController {
   constructor(private readonly produtosService: ProdutosService) {}
 
-  // ------------------------------------
-  // ROTAS PROTEGIDAS (GERENCIAMENTO - DONO DE PADARIA)
-  // ------------------------------------
-
-  // Rota: POST /produtos (Permitido apenas para Donos de Padaria)
   @Post()
-  @UseGuards(AuthGuard('jwt'), FuncaoGuard, AssinaturaAtivaGuard) // 1. Verifica o token; 2. Verifica a função; 3. Verifica assinatura
-  @Funcoes(FuncaoUsuario.DONO_PADARIA) // Apenas DONO_PADARIA pode acessar
-  async criarProduto(
-    @Body() dados: CriarProdutoDto,
-    @Req() req: { user: { userId: number } },
-  ) {
-    const donoId = req.user.userId;
-    return this.produtosService.criarProduto(donoId, dados);
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @Funcoes(FuncaoUsuario.DONO_PADARIA)
+  async criarProduto(@Body() dados: CriarProdutoDto, @Req() req: any) {
+    // Extraindo IDs do Token (conforme aparece no seu terminal)
+    const donoId = req.user.userId || req.user.sub;
+    const padariaId = req.user.padariaId;
+    
+    console.log(`Tentando cadastrar: Dono ${donoId}, Padaria ${padariaId}`);
+    
+    return this.produtosService.criarProduto(donoId, padariaId, dados);
   }
 
-  // ------------------------------------
-  // ROTAS PÚBLICAS (CATÁLOGO - CLIENTE)
-  // ------------------------------------
+  @Get()
+  @UseGuards(AuthGuard('jwt'), FuncaoGuard)
+  @Funcoes(FuncaoUsuario.DONO_PADARIA)
+  async listarMeusProdutos(@Req() req: any) {
+    return this.produtosService.buscarProdutosPorPadaria(req.user.padariaId);
+  }
 
-  // Rota: GET /produtos/catalogo (Buscar todos os produtos disponíveis)
   @Get('catalogo')
   async buscarCatalogo() {
     return this.produtosService.buscarCatalogo();
-  }
-
-  // Rota: GET /produtos/padaria/:padariaId (Buscar produtos de uma padaria específica)
-  @Get('padaria/:padariaId')
-  async buscarProdutosPorPadaria(@Param('padariaId') padariaId: string) {
-    return this.produtosService.buscarProdutosPorPadaria(
-      parseInt(padariaId, 10),
-    );
   }
 }
